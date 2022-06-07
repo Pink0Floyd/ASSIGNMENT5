@@ -4,9 +4,9 @@
 *
 * This module contains functions to implement PWM signals with variable duty-cycle
 *
-* \author Filipe Loureiro & Miguel Silva
-* \date 25/05/22
-* \version 2.4
+* \author Filipe Loureiro e Miguel Silva
+* \date 07/06/22
+* \version 5.1
 * \bug No bugs detected
 */
 
@@ -14,7 +14,6 @@
 #define PWM_H 
 
 #include "base.h"
-#include "gpio.h"
 
 #define PWM0_NID DT_NODELABEL(pwm0)
 
@@ -38,7 +37,7 @@ void pwm_init();
 /**
 * \brief 
 *
-*\param [IN] uint16_t duty_cycle to set the PWM
+*\param [IN] uint16_t duty_cycle to set the PWM,[0 to 100]%
 * \bug No bugs detected
 */
 void pwm_led_set(uint16_t duty_cycle);
