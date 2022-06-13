@@ -1,19 +1,20 @@
 /**
-* \file adc.h
+* \file uart.h
 * \brief UART module
 *
 * This module implements the functions to initialise and interact with the UART
-* \brief  Use the console services instead of native UART functions
+* 
 * \author Filipe Loureiro & Miguel Silva
 * \date 13/06/22
-* \version 3.1
+* \version 5.2
 * \bug No bugs detected
 */
 
-#ifndef COM
-#define COM
+#ifndef _UART_H
+#define _UART_H
 
 #include "base.h"
+#include <console/console.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //  Public Functions:

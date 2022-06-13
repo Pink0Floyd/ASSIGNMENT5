@@ -1,3 +1,5 @@
+#include "uart.h"
+
 void uart_init()
 {
       console_init();
@@ -5,7 +7,7 @@ void uart_init()
 
 char get_char()
 {
-      c = console_getchar();
+      char c = console_getchar();
       return c;
 }
 
