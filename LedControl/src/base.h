@@ -6,7 +6,7 @@
 *
 * \author Filipe Loureiro & Miguel Silva
 * \date 13/06/22
-* \version 3.1
+* \version 5.1
 * \bug No bugs detected
 */
 
@@ -29,4 +29,7 @@
 #include <drivers/pwm.h>
 //Console use
 #include <console/console.h>
+
+float saturation(float value,float min,float max);
+
 #endif
