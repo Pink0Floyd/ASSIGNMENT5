@@ -1,14 +1,9 @@
 #include "gpio.h"
 
-/*
-  const struct device *gpio0_dev;
-  gpio0_dev=gpio0_init();
-*/
-
-static const struct device *gpio0_dev;						    // Pointer to GPIO device structure
+static struct device *gpio0_dev;						    // Pointer to GPIO device structure
 static int gpio0_state=0;							    // The inicialization of the GPIO 0 struct is indicated by this variable
 
-static const struct device *gpio1_dev;						    // Pointer to GPIO device structure
+static struct device *gpio1_dev;						    // Pointer to GPIO device structure
 static int gpio1_state=0;							    // The initialization of the GPIO 1 struct is indicated by this variable    
 	    
 ///////////////////////////////////////////////////////////////////////////////////////
