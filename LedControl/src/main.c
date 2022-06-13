@@ -3,6 +3,7 @@
 #include "gpio.h"
 #include "adc.h"
 #include "filter.h"
+#include "control.h"
 #include "pwm.h"
 
 #define PRINT_INIT 1		///< enable for thread initialisation prints

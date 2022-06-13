@@ -14,23 +14,8 @@ uint16_t read_avg()
 int insert_sample(uint16_t sample)
 {
 	sample=sample%(MAX_SAMPLE_VALUE+1);
-	if(buffer.count>=FILTER_BUFFER_SIZE)
-	{
-		if(sample<read_avg()-FILTER_THRESHOLD)			// smart filter threshold operation
-		{									// smart filter threshold operation
-			return -1;							// smart filter threshold operation
-		}									// smart filter threshold operation
-		else if(sample>read_avg()+FILTER_THRESHOLD)		// smart filter threshold operation
-		{									// smart filter threshold operation
-			return -1;							// smart filter threshold operation
-		}									// smart filter threshold operation
-	}
-	else
-	{
-		buffer.count++;							// update count
-	}
-
-	buffer.pointer=(buffer.pointer+1)%FILTER_BUFFER_SIZE;			// update pointer
+	buffer.count++;								// update count
+	buffer.pointer=(buffer.pointer+1)%FILTER_BUFFER_SIZE;		// update pointer
 	buffer.array[buffer.pointer]=sample;				// insert accepted sample
 	return 0;
 }
