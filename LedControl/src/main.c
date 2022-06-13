@@ -10,7 +10,6 @@
 #define PRINT_LOOP 0		///< enable for thread loop prints
 
 #define SAMPLING_PERIOD 1000		///< sampling period in miliseconds
-
 #define SAMPLING_PRIO 1			///< sampling thread priority
 #define FILTERING_PRIO 1		///< filtering thread priority
 #define CONTROLLING_PRIO 1		///< controlling thread priority
@@ -21,7 +20,7 @@ K_THREAD_STACK_DEFINE(sampling_stack,SAMPLING_STACK_SIZE);		///< sampling thread
 #define FILTERING_STACK_SIZE 512						///< filtering thread stack size
 K_THREAD_STACK_DEFINE(filtering_stack,FILTERING_STACK_SIZE);	///< filtering thread stack size
 #define CONTROLLING_STACK_SIZE 512						///< controlling thread stack size
-K_THREAD_STACK_DEFINE(contrlling_stack,CONTROLLING_STACK_SIZE);	///< controlling thread stack size
+K_THREAD_STACK_DEFINE(controlling_stack,CONTROLLING_STACK_SIZE);	///< controlling thread stack size
 #define ACTUATING_STACK_SIZE 512						///< actuating thread stack size
 K_THREAD_STACK_DEFINE(actuating_stack,ACTUATING_STACK_SIZE);	///< actuating thread stack size
 
@@ -104,7 +103,7 @@ void controlling(void* A,void* B,void* C)
 	while(1)
 	{
 		if(PRINT_LOOP)
-		printk("controlling: waiting for a sample from sampling\n");
+		printk("controlling: waiting for filtering to finish\n");
 		k_sem_take(&sem_filt,K_FOREVER);							// sleep until filtering finishes
 		if(PRINT_LOOP)
 		printk("controlling: filtering finished\n");
@@ -113,7 +112,7 @@ void controlling(void* A,void* B,void* C)
 		if(!PRINT_LOOP)
 		printk("-> %u ",act_in);
 		if(PRINT_LOOP)
-		printk("controlling: contrlled %u to %u\n",contr_in,act_in);
+		printk("controlling: controlled %u to %u\n",contr_in,act_in);
 
 		k_sem_give(&sem_contr);									// wake up actuating
 		if(PRINT_LOOP)
@@ -129,12 +128,14 @@ void actuating(void* A,void* B,void* C)
 	while(1)
 	{
 		if(PRINT_LOOP)
-		printk("actuating: waiting for a filtered sample from filtering\n");
+		printk("actuating: waiting for controlling to finish\n");
 		k_sem_take(&sem_contr,K_FOREVER);							// sleep until controlling finishes
 		if(PRINT_LOOP)
 		printk("actuating: got a filtered sample from filtering\n");
 
 		pwm_led_set(act_in);									// act
+		if(!PRINT_LOOP)
+		printk("\n");
 		if(PRINT_LOOP)
 		printk("actuating: led has been set to %u %%\n",act_in);
 	}
