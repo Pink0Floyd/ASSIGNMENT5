@@ -6,15 +6,18 @@
 *
 * \author Filipe Loureiro & Miguel Silva
 * \date 13/06/22
-* \version 5.3
+* \version 5.4
 * \bug Remains Untested
 */
 
 #include "base.h"
 
-#define MAX_SAMPLE_VALUE 1023			///< max sample value
-#define FILTER_BUFFER_SIZE 11			///< number of samples in each average plus the excluded old sample
-#define FILTER_THRESHOLD 120			///< range of values centered in the sample average allowed for a sample value
+#define MIN_SAMPLE_VALUE 0			///< minimum sample value
+#define MAX_SAMPLE_VALUE 1023			///< maximum sample value
+
+#define FILTER_BUFFER_SIZE 13			///< number of samples in each average plus the excluded old sample
+#define MIN_FILTER_VALUE 0			///< minimum filter value
+#define MAX_FILTER_VALUE 100			///< maximum filter value
 
 typedef struct filter_buffer
 {
@@ -27,7 +30,7 @@ typedef struct filter_buffer
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Private Member Functions
 
-//uint16_t read_avg();
+//float read_avg();
 //void insert_sample(uint16_t sample);
 //void avg_samples();
 
@@ -52,4 +55,4 @@ void filter_init();
 * \return last average calculated
 * \bug No bugs detected
 */
-uint16_t filter(uint16_t in);
+float filter(uint16_t in);

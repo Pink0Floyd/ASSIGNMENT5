@@ -130,13 +130,13 @@ void actuating(void* A,void* B,void* C)
 	{
 		if(PRINT_LOOP)
 		printk("actuating: waiting for a filtered sample from filtering\n");
-		k_sem_take(&sem_filtsample,K_FOREVER);						// sleep until controlling finishes
+		k_sem_take(&sem_contr,K_FOREVER);							// sleep until controlling finishes
 		if(PRINT_LOOP)
 		printk("actuating: got a filtered sample from filtering\n");
 
-		pwm_led_set(filt_out*100/1023);							// act
+		pwm_led_set(act_in);									// act
 		if(PRINT_LOOP)
-		printk("actuating: led has been set to %u %%\n",filt_out*100/1023);
+		printk("actuating: led has been set to %u %%\n",act_in);
 	}
 }
 
