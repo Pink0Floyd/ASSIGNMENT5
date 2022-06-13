@@ -6,12 +6,13 @@ static filter_buffer buffer;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Private Member Functions
 
-uint16_t read_avg()
+float read_avg()
 {
-	return (uint16_t)buffer.samples_avg;		// return last calculated average
+	float avg=buffer.samples_avg;		// return last calculated average
+	return (avg-MIN_SAMPLE_VALUE)*(MAX_FILTER_VALUE-MIN_FILTER_VALUE)/(MAX_SAMPLE_VALUE-MIN_SAMPLE_VALUE);
 }
 
-int insert_sample(uint16_t sample)
+void insert_sample(uint16_t sample)
 {
 	sample=sample%(MAX_SAMPLE_VALUE+1);
 	buffer.count++;								// update count
@@ -52,12 +53,9 @@ void filter_init()
 	printk("\tInitialised filter operation\n");
 }
 
-uint16_t filter(uint16_t in)
+float filter(uint16_t in)
 {
-	int err=insert_sample(in);
-	if(err==0)
-	{
-		avg_samples();
-	}
+	insert_sample(in);
+	avg_samples();
 	return read_avg();
 }
