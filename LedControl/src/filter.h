@@ -7,7 +7,7 @@
 * \author Filipe Loureiro & Miguel Silva
 * \date 13/06/22
 * \version 5.5
-* \bug Remains Untested
+* \bug No bugs found
 */
 
 #ifndef _FILTER_H

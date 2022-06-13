@@ -6,8 +6,8 @@
 *
 * \author Filipe Loureiro & Miguel Silva
 * \date 13/06/22
-* \version 5.6
-* \bug Remains Untested
+* \version 5.7
+* \bug No bugs found
 */
 
 #ifndef _CONTROL_H

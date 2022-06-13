@@ -147,6 +147,7 @@ void main()
 
 	adc_init();
 	filter_init();
+
 	pwm_init();
 
 	k_sem_init(&sem_samp,0,1);
