@@ -6,8 +6,8 @@
 *
 * \author Filipe Loureiro & Miguel Silva
 * \date 13/06/22
-* \version 5.2
-* \bug No bugs detected
+* \version 5.3
+* \bug Remains Untested
 */
 
 #include "base.h"
