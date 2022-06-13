@@ -5,8 +5,8 @@
 * This module contains functions to implement the smart filter required
 *
 * \author Filipe Loureiro & Miguel Silva
-* \date 25/05/22
-* \version 2.7
+* \date 12/06/22
+* \version 5.1
 * \bug No bugs detected
 */
 
