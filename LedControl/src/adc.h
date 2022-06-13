@@ -5,13 +5,13 @@
 * This module contains functions to implement an AD converter
 *
 * \author Filipe Loureiro & Miguel Silva
-* \date 25/05/22
-* \version 2.7
+* \date 13/06/22
+* \version 5.1
 * \bug No bugs detected
 */
 
-#ifndef ADC_H
-#define ADC_H
+#ifndef _ADC_H
+#define _ADC_H
 
 #include "base.h"
 

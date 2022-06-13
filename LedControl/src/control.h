@@ -6,9 +6,12 @@
 *
 * \author Filipe Loureiro & Miguel Silva
 * \date 13/06/22
-* \version 5.5
+* \version 5.6
 * \bug Remains Untested
 */
+
+#ifndef _CONTROL_H
+#define _CONTROL_H
 
 #include "base.h"
 
@@ -31,3 +34,5 @@
 // Public Member Functions
 
 float controller(float curr,float target);
+
+#endif

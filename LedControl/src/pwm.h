@@ -5,13 +5,13 @@
 * This module contains functions to implement PWM signals with variable duty-cycle
 *
 * \author Filipe Loureiro e Miguel Silva
-* \date 07/06/22
-* \version 5.1
+* \date 13/06/22
+* \version 5.2
 * \bug No bugs detected
 */
 
-#ifndef PWM_H
-#define PWM_H 
+#ifndef _PWM_H
+#define _PWM_H 
 
 #include "base.h"
 

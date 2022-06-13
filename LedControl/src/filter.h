@@ -6,9 +6,12 @@
 *
 * \author Filipe Loureiro & Miguel Silva
 * \date 13/06/22
-* \version 5.4
+* \version 5.5
 * \bug Remains Untested
 */
+
+#ifndef _FILTER_H
+#define _FILTER_H
 
 #include "base.h"
 
@@ -56,3 +59,5 @@ void filter_init();
 * \bug No bugs detected
 */
 float filter(uint16_t in);
+
+#endif
