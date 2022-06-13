@@ -14,10 +14,10 @@ float read_avg()
 
 void insert_sample(uint16_t sample)
 {
-	sample=sample%(MAX_SAMPLE_VALUE+1);
-	buffer.count++;								// update count
-	buffer.pointer=(buffer.pointer+1)%FILTER_BUFFER_SIZE;		// update pointer
-	buffer.array[buffer.pointer]=sample;				// insert accepted sample
+	sample=saturation(sample,MIN_SAMPLE_VALUE,MAX_SAMPLE_VALUE);	// saturate sample
+	buffer.count++;									// update count
+	buffer.pointer=(buffer.pointer+1)%FILTER_BUFFER_SIZE;			// update pointer
+	buffer.array[buffer.pointer]=sample;					// insert accepted sample
 }
 
 void avg_samples()

@@ -19,8 +19,8 @@
 #define MIN_INT_ERROR -12
 #define MAX_INT_ERROR 12
 
-#define MIN_CONTROLLER_VALUE 0
-#define MAX_CONTROLLER_VALUE 100
+#define MIN_CONTROLLER_VALUE 4
+#define MAX_CONTROLLER_VALUE 96
 
 #define KP 6
 #define KI 2

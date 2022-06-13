@@ -7,9 +7,9 @@
 #include "pwm.h"
 
 #define PRINT_INIT 1		///< enable for thread initialisation prints
-#define PRINT_LOOP 1		///< enable for thread loop prints
+#define PRINT_LOOP 0		///< enable for thread loop prints
 
-#define SAMPLING_PERIOD 12000		///< sampling period in miliseconds
+#define SAMPLING_PERIOD 1000		///< sampling period in miliseconds
 #define SAMPLING_PRIO 1			///< sampling thread priority
 #define FILTERING_PRIO 1		///< filtering thread priority
 #define CONTROLLING_PRIO 1		///< controlling thread priority

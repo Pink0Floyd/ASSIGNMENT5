@@ -15,7 +15,7 @@
 
 #include "base.h"
 
-#define MIN_SAMPLE_VALUE 0			///< minimum sample value
+#define MIN_SAMPLE_VALUE 22			///< minimum sample value
 #define MAX_SAMPLE_VALUE 1023			///< maximum sample value
 
 #define FILTER_BUFFER_SIZE 13			///< number of samples in each average plus the excluded old sample
@@ -33,6 +33,7 @@ typedef struct filter_buffer
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Private Member Functions
 
+//float saturation(float value,float min,float max);
 //float read_avg();
 //void insert_sample(uint16_t sample);
 //void avg_samples();
