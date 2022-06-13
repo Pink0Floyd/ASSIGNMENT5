@@ -5,8 +5,8 @@
 * This file contain the basic includes and macros for general porpouse
 *
 * \author Filipe Loureiro & Miguel Silva
-* \date 25/05/22
-* \version 2.6
+* \date 13/06/22
+* \version 3.1
 * \bug No bugs detected
 */
 
@@ -27,5 +27,6 @@
 #include <drivers/adc.h>
 #include <hal/nrf_saadc.h>
 #include <drivers/pwm.h>
-
+//Console use
+#include <console/console.h>
 #endif
