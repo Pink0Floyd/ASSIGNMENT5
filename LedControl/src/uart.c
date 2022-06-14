@@ -7,15 +7,13 @@ void uart_init()
 
 char get_char()
 {
-      char c = console_getchar();
-      return c;
+      return console_getchar();
 }
 
 void put_char(char c)
 {
       console_putchar(c);
 }
-
 
 void put_str(char* str)
 {

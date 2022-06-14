@@ -6,6 +6,7 @@
 #include "control.h"
 #include "pwm.h"
 #include "buttons.h"
+#include "uart.h"
 
 #define PRINT_INIT 1		///< enable for thread initialisation prints
 #define PRINT_LOOP 0		///< enable for thread loop prints
@@ -17,6 +18,7 @@
 #define CONTROLLING_PRIO 1		///< controlling thread priority
 #define ACTUATING_PRIO 1		///< actuating thread priority
 #define BUTTONING_PRIO 3		///< buttoing thread priority
+#define UARTING_PRIO 3			///< uarting thread priority
 
 #define SAMPLING_STACK_SIZE 512						///< sampling thread stack size
 K_THREAD_STACK_DEFINE(sampling_stack,SAMPLING_STACK_SIZE);		///< sampling thread stack size
@@ -28,6 +30,8 @@ K_THREAD_STACK_DEFINE(controlling_stack,CONTROLLING_STACK_SIZE);	///< controllin
 K_THREAD_STACK_DEFINE(actuating_stack,ACTUATING_STACK_SIZE);	///< actuating thread stack size
 #define BUTTOING_STACK_SIZE 512						///< buttoing thread stack size
 K_THREAD_STACK_DEFINE(buttoing_stack,BUTTOING_STACK_SIZE);		///< buttoing thread stack size
+#define UARTING_STACK_SIZE 512						///< uarting thread stack size
+K_THREAD_STACK_DEFINE(uarting_stack,UARTING_STACK_SIZE);		///< uarting thread stack size
 
 struct k_thread sampling_data;	///< sampling thread initialisation
 k_tid_t sampling_tid;			///< sampling thread initialisation
@@ -39,11 +43,12 @@ struct k_thread actuating_data;	///< actuating thread initialisation
 k_tid_t actuating_tid;			///< actuating thread initialisation
 struct k_thread buttoing_data;	///< buttoing thread initialisation
 k_tid_t buttoing_tid;			///< buttoing thread initialisation
+struct k_thread uarting_data;		///< uarting thread initialisation
+k_tid_t uarting_tid;			///< uarting thread initialisation
 
 struct k_sem sem_samp;			///< sampling finished semafore
 struct k_sem sem_filt;			///< filtering finished semafore
 struct k_sem sem_contr;			///< controlling finished semafore
-
 uint16_t filt_in;				///< shared memory between sampling and filtering
 uint16_t contr_in;			///< shared memory between filtering and controlling
 uint16_t act_in;				///< shared memory between controlling and actuating
@@ -174,6 +179,17 @@ void buttoing(void* A,void* B,void* C)
 	}
 }
 
+void uarting(void* A,void* B,void* C)
+{
+	if(PRINT_INIT)
+	printk("Launched buttoing thread\n");
+
+	while(1)
+	{
+		
+	}
+}
+
 void main()
 {
 	printk("\n\n\nLed Controller \n");
@@ -201,6 +217,9 @@ void main()
 	actuating_tid=k_thread_create(&actuating_data,actuating_stack,K_THREAD_STACK_SIZEOF(actuating_stack),			// create actuating thread
 		actuating,NULL,NULL,NULL,ACTUATING_PRIO,0,K_NO_WAIT);										// create actuating thread
 
-	buttoing_tid=k_thread_create(&buttoing_data,buttoing_stack,K_THREAD_STACK_SIZEOF(buttoing_stack),			// create buttons 
-		buttoing,NULL,NULL,NULL,BUTTONING_PRIO,0,K_NO_WAIT);										// create actuating thread
+	buttoing_tid=k_thread_create(&buttoing_data,buttoing_stack,K_THREAD_STACK_SIZEOF(buttoing_stack),			// create buttoing thread
+		buttoing,NULL,NULL,NULL,BUTTONING_PRIO,0,K_NO_WAIT);										// create buttoing thread
+
+	uarting_tid=k_thread_create(&uarting_data,uarting_stack,K_THREAD_STACK_SIZEOF(uarting_stack),				// create uarting thread
+		uarting,NULL,NULL,NULL,UARTING_PRIO,0,K_NO_WAIT);										// create uarting thread
 }
