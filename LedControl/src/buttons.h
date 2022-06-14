@@ -4,13 +4,9 @@
 *
 * This module implements the functions to initialize and use the built in board buttons
 * \author Filipe Loureiro e Miguel Silva
-* \date 07/06/22
-* \version 5.1
+* \date 14/06/22
+* \version 5.2
 * \bug No bugs detected
-*/
-
-/* OBSERVATION:
-* This module will suffer many updates due to the newness that this board brings to us
 */
 
 #ifndef _BUTTONS_H
@@ -19,7 +15,7 @@
 #include "base.h"
 #include "gpio.h"
 	    
-#define PRINT_LOOP 0					    // For debug prints				  
+#define PRINT_BUTTONS_DEBUG 0						// For debug prints				  
 
 #define BUTTON1 11                                          // BUTTON1 pin number of GPIO_0
 #define BUTTON2 12                                          // BUTTON2 pin number of GPIO_0
@@ -64,10 +60,9 @@ void buttons_init_(char n_buttons, char c);
 * Return the current flag button state
 *
 * \param [IN] int button	    -> the button number for read the flag 
-*
 * \bug No bugs detected
 */
-int read_buttons(int button);
+uint8_t read_buttons(uint8_t button);
 
 
 ///////////////////////////////////////////////////////////////////////////////////////

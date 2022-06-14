@@ -162,11 +162,8 @@ void buttoing(void* A,void* B,void* C)
 		// read buttons
 		button_flag=read_buttons(4)*8+read_buttons(3)*4+read_buttons(2)*2+read_buttons(1)*1;
 
-		if(!PRINT_LOOP)
-		printk("%u, %u, %u, %u ",b1,b2,b3,b4); 
-
 		if(PRINT_LOOP)
-		printk("Buttoing: finished buttons checked\n");
+		printk("Buttoing: %u read from buttons\n",button_flag);
 
 		curr_time=k_uptime_get();				// sleep until next sampling period
 		if(curr_time<end_time)					// sleep until next sampling period

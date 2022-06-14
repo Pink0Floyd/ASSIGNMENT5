@@ -1,3 +1,4 @@
+
 #include "gpio.h"
 
 static struct device *gpio0_dev;						    // Pointer to GPIO device structure
