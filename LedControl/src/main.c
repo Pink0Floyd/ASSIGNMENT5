@@ -11,11 +11,12 @@
 #define PRINT_LOOP 0		///< enable for thread loop prints
 
 #define SAMPLING_PERIOD 1000		///< sampling period in miliseconds
-#define BUTTONS_PERIOD 5000		///< buttons check period in miliseconds
-#define SAMPLING_PRIO 1			///< sampling thread priority
+#define BUTTOING_PERIOD 5000		///< buttons check period in miliseconds
+#define SAMPLING_PRIO 2			///< sampling thread priority
 #define FILTERING_PRIO 1		///< filtering thread priority
 #define CONTROLLING_PRIO 1		///< controlling thread priority
 #define ACTUATING_PRIO 1		///< actuating thread priority
+#define BUTTONING_PRIO 3		///< buttoing thread priority
 
 #define SAMPLING_STACK_SIZE 512						///< sampling thread stack size
 K_THREAD_STACK_DEFINE(sampling_stack,SAMPLING_STACK_SIZE);		///< sampling thread stack size
@@ -25,8 +26,8 @@ K_THREAD_STACK_DEFINE(filtering_stack,FILTERING_STACK_SIZE);	///< filtering thre
 K_THREAD_STACK_DEFINE(controlling_stack,CONTROLLING_STACK_SIZE);	///< controlling thread stack size
 #define ACTUATING_STACK_SIZE 512						///< actuating thread stack size
 K_THREAD_STACK_DEFINE(actuating_stack,ACTUATING_STACK_SIZE);	///< actuating thread stack size
-#define BUTTONS_STACK_SIZE 512						///< buttons thread stack size
-K_THREAD_STACK_DEFINE(buttons_stack,BUTTONS_STACK_SIZE);	///< buttons thread stack size
+#define BUTTOING_STACK_SIZE 512						///< buttoing thread stack size
+K_THREAD_STACK_DEFINE(buttoing_stack,BUTTOING_STACK_SIZE);		///< buttoing thread stack size
 
 struct k_thread sampling_data;	///< sampling thread initialisation
 k_tid_t sampling_tid;			///< sampling thread initialisation
@@ -36,8 +37,8 @@ struct k_thread controlling_data;	///< controlling thread initialisation
 k_tid_t controlling_tid;		///< controlling thread initialisation
 struct k_thread actuating_data;	///< actuating thread initialisation
 k_tid_t actuating_tid;			///< actuating thread initialisation
-struct k_thread buttons_data;	///< buttons thread initialisation
-k_tid_t buttons_tid;			///< buttons thread initialisation
+struct k_thread buttoing_data;	///< buttoing thread initialisation
+k_tid_t buttoing_tid;			///< buttoing thread initialisation
 
 struct k_sem sem_samp;			///< sampling finished semafore
 struct k_sem sem_filt;			///< filtering finished semafore
@@ -47,10 +48,7 @@ uint16_t filt_in;				///< shared memory between sampling and filtering
 uint16_t contr_in;			///< shared memory between filtering and controlling
 uint16_t act_in;				///< shared memory between controlling and actuating
 
-uint8_t b1;			  ///< global bvariable for button 1
-uint8_t b2;			  ///< global bvariable for button 2	
-uint8_t b3;			  ///< global bvariable for button 3
-uint8_t b4;			  ///< global bvariable for button 4			    
+uint8_t button_flag;			///< global variable for button 1	    
 
 float target=50;
 
@@ -152,32 +150,30 @@ void actuating(void* A,void* B,void* C)
 	}
 }
 
-void buttons(void* A,void* B,void* C)
+void buttoing(void* A,void* B,void* C)
 {
 	if(PRINT_INIT)
-	printk("Launched buttons thread\n");
+	printk("Launched buttoing thread\n");
 
 	int64_t curr_time=k_uptime_get();
-	int64_t end_time=k_uptime_get()+BUTTONS_PERIOD;
+	int64_t end_time=k_uptime_get()+BUTTOING_PERIOD;
 	while(1)
 	{
-		b1=read_buttons(1);					// read button 1
-		b2=read_buttons(1);					// read button 2
-		b3=read_buttons(1);					// read button 3
-		b4=read_buttons(1);					// read button 4
+		// read buttons
+		button_flag=read_buttons(4)*8+read_buttons(3)*4+read_buttons(2)*2+read_buttons(1)*1;
 
 		if(!PRINT_LOOP)
 		printk("%u, %u, %u, %u ",b1,b2,b3,b4); 
 
 		if(PRINT_LOOP)
-		printk("Buttons: finished buttons checked\n");
+		printk("Buttoing: finished buttons checked\n");
 
 		curr_time=k_uptime_get();				// sleep until next sampling period
 		if(curr_time<end_time)					// sleep until next sampling period
 		{								// sleep until next sampling period
 			k_msleep(end_time-curr_time);			// sleep until next sampling period
 		}								// sleep until next sampling period
-		end_time+=BUTTONS_PERIOD;				// sleep until next sampling period
+		end_time+=BUTTOING_PERIOD;				// sleep until next sampling period
 	}
 }
 
@@ -208,6 +204,6 @@ void main()
 	actuating_tid=k_thread_create(&actuating_data,actuating_stack,K_THREAD_STACK_SIZEOF(actuating_stack),			// create actuating thread
 		actuating,NULL,NULL,NULL,ACTUATING_PRIO,0,K_NO_WAIT);										// create actuating thread
 
-        buttons_tid=k_thread_create(&buttons_data,buttons_stack,K_THREAD_STACK_SIZEOF(buttons_stack),			// create buttons thread
-		buttons,NULL,NULL,NULL,ACTUATING_PRIO,0,K_NO_WAIT);										// create actuating thread
+	buttoing_tid=k_thread_create(&buttoing_data,buttoing_stack,K_THREAD_STACK_SIZEOF(buttoing_stack),			// create buttons 
+		buttoing,NULL,NULL,NULL,BUTTONING_PRIO,0,K_NO_WAIT);										// create actuating thread
 }
