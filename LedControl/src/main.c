@@ -19,6 +19,7 @@
 #define ACTUATING_PRIO 1		///< actuating thread priority
 #define BUTTONING_PRIO 3		///< buttoing thread priority
 #define UARTING_PRIO 3			///< uarting thread priority
+#define TIMING_PRIO 4			///< timing thread priority
 
 #define SAMPLING_STACK_SIZE 512						///< sampling thread stack size
 K_THREAD_STACK_DEFINE(sampling_stack,SAMPLING_STACK_SIZE);		///< sampling thread stack size
@@ -32,6 +33,8 @@ K_THREAD_STACK_DEFINE(actuating_stack,ACTUATING_STACK_SIZE);	///< actuating thre
 K_THREAD_STACK_DEFINE(buttoing_stack,BUTTOING_STACK_SIZE);		///< buttoing thread stack size
 #define UARTING_STACK_SIZE 512						///< uarting thread stack size
 K_THREAD_STACK_DEFINE(uarting_stack,UARTING_STACK_SIZE);		///< uarting thread stack size
+#define TIMING_STACK_SIZE 512							///< timing thread stack size
+K_THREAD_STACK_DEFINE(uarting_stack,UARTING_STACK_SIZE);		///< timing thread stack size
 
 struct k_thread sampling_data;	///< sampling thread initialisation
 k_tid_t sampling_tid;			///< sampling thread initialisation
@@ -45,6 +48,8 @@ struct k_thread buttoing_data;	///< buttoing thread initialisation
 k_tid_t buttoing_tid;			///< buttoing thread initialisation
 struct k_thread uarting_data;		///< uarting thread initialisation
 k_tid_t uarting_tid;			///< uarting thread initialisation
+struct k_thread timing_data;		///< timing thread initialisation
+k_tid_t timing_tid;			///< timing thread initialisation
 
 struct k_sem sem_samp;			///< sampling finished semafore
 struct k_sem sem_filt;			///< filtering finished semafore
@@ -182,7 +187,18 @@ void buttoing(void* A,void* B,void* C)
 void uarting(void* A,void* B,void* C)
 {
 	if(PRINT_INIT)
-	printk("Launched buttoing thread\n");
+	printk("Launched uarting thread\n");
+
+	while(1)
+	{
+		
+	}
+}
+
+void timing(void* A,void* B,void* C)
+{
+	if(PRINT_INIT)
+	printk("Launched timing thread\n");
 
 	while(1)
 	{
