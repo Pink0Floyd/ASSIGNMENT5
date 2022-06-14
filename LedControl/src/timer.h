@@ -6,7 +6,7 @@
 *
 * \author Filipe Loureiro & Miguel Silva
 * \date 14/06/22
-* \version 5.3
+* \version 5.4
 * \bug Remains untested
 */
 
@@ -35,9 +35,17 @@ typedef struct time_data
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Private Member Functions
 
+//void format_time()
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Public Member Functions
 
 void timer_init();
+void update_time(uint8_t sec);
+void update_time_sec(uint16_t sec);
+void update_time_min(uint16_t min);
+void update_time_hour(uint16_t hour);
+void update_time_day(uint16_t day);
+void set_time(uint16_t day,uint16_t hour,uint16_t min,uint16_t sec);
 
 #endif
