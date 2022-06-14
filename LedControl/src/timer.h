@@ -5,8 +5,8 @@
 * This module contains functions to implement timer functionalities
 *
 * \author Filipe Loureiro & Miguel Silva
-* \date 13/06/22
-* \version 5.2
+* \date 14/06/22
+* \version 5.3
 * \bug Remains untested
 */
 
@@ -20,16 +20,16 @@
 #define MIN_HOUR 0
 #define MAX_HOUR 24
 #define MIN_DAY 0
-#define MAX_DAY 365
+#define MAX_DAY 7
 
 #include "base.h"
 
 typedef struct time_data
 {
-	uint8_t day;
-	uint8_t hour;
-	uint8_t min;
-	uint8_t sec;
+	uint16_t day;
+	uint16_t hour;
+	uint16_t min;
+	uint16_t sec;
 }time_data;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

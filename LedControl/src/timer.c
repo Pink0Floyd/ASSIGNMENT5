@@ -18,32 +18,63 @@ void timer_init()
 	printk("\tInitialised timer operation\n");
 }
 
+void format_time()
+{
+	while(time.sec>=60)
+	{
+		time.sec-=60;
+		time.min++;
+	}
+	while(time.min>=60)
+	{
+		time.min-=60;
+		time.hour++;
+	}
+	while(time.hour>=24)
+	{
+		time.hour-=24;
+		time.day++;
+	}
+	while(time.day>=7)
+	{
+		time.day-=7;
+	}
+}
+
 void update_time(uint8_t sec)
 {
 	update_time_sec(sec);
 }
 
-void update_time_sec(uint8_t sec)
+void update_time_sec(uint16_t sec)
 {
-	
+	time.sec+=sec;
+	format_time();
 }
 
-void update_time_min(uint8_t min)
+void update_time_min(uint16_t min)
 {
-	
+	time.min+=min;
+	format_time();
 }
 
-void update_time_hour(uint8_t hour)
+void update_time_hour(uint16_t hour)
 {
-	
+	time.hour+=hour;
+	format_time();
 }
 
-void update_time_day(uint8_t day)
+void update_time_day(uint16_t day)
 {
-	
+	time.day+=day;
+	format_time();
 }
 
-void set_time(uint8_t day,uint8_t hour,uint8_t min,uint8_t sec)
+void set_time(uint16_t day,uint16_t hour,uint16_t min,uint16_t sec)
 {
-	
+	time.day=day;
+	time.hour=hour;
+	time.min=min;
+	time.sec=sec;
+	format_time();
 }
