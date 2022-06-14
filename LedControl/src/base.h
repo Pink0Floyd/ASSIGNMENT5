@@ -5,8 +5,8 @@
 * This file contain the basic includes and macros for general porpouse
 *
 * \author Filipe Loureiro & Miguel Silva
-* \date 13/06/22
-* \version 5.1
+* \date 14/06/22
+* \version 5.2
 * \bug No bugs detected
 */
 
@@ -29,6 +29,12 @@
 #include <drivers/pwm.h>
 //Console use
 #include <console/console.h>
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Private Member Functions
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Public Member Functions
 
 float saturation(float value,float min,float max);
 
