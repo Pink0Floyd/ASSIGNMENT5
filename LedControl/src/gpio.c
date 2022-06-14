@@ -22,7 +22,7 @@ void gpio0_bind()
 	    printk("Bind to GPIO0 successfull \n\r");        
       }    
 
-      if(PRINT_LOOP)
+      if(PRINT_GPIB_DEBUG)
       {
 	    printk("End of %s test\n\r", gpio0_dev->name);			    // Debbug line, simple test example to check if the pointer it's 
       }
@@ -42,20 +42,22 @@ void gpio1_bind()
 	    printk("Bind to GPIO1 successfull \n\r");        
       }    
 
-      if(PRINT_LOOP)
+      if(PRINT_GPIB_DEBUG)
       {    
 	    printk("End of %s test\n\r", gpio1_dev->name);			    // Debbug line, simple test example to check if the pointer it's ok		  
       }	    
       gpio1_state=1;								    // It means that gpio0_device it was already initialised
 }
+
 ///////////////////////////////////////////////////////////////////////////////////////
 //  Public Functions:
+
 struct device *gpio0_init()
 {
       if(gpio0_state==0)
       {
 	    gpio0_bind();
-	    if(PRINT_LOOP)
+	    if(PRINT_GPIB_DEBUG)
 	    {
 		  printk("GPIO 0 initialised for the first time\n\r");
 	    }
@@ -63,7 +65,7 @@ struct device *gpio0_init()
       }
       else
       {
-	    if(PRINT_LOOP)
+	    if(PRINT_GPIB_DEBUG)
 	    {
 		  printk("GPIO 1 already Initialised\n\r");
 	    }
@@ -82,7 +84,7 @@ struct device *gpio1_init()
       if(gpio1_state==0)
       {
 	    gpio1_bind();
-	    if(PRINT_LOOP)
+	    if(PRINT_GPIB_DEBUG)
 	    {
 		  printk("GPIO 1 initialised for the first time\n\r");
 	    }
@@ -90,7 +92,7 @@ struct device *gpio1_init()
       }
       else
       {
-	     if(PRINT_LOOP)
+	     if(PRINT_GPIB_DEBUG)
 	    {
 		  printk("GPIO 1 already Initialised\n\r");
 	    }

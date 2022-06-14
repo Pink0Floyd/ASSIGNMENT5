@@ -4,8 +4,8 @@
 *
 * This module implements the functions to initialize and do some gpio configuration
 * \author Filipe Loureiro e Miguel Silva
-* \date 07/06/22
-* \version 5.2
+* \date 14/06/22
+* \version 5.3
 * \bug No bugs detected
 */
 
@@ -14,7 +14,7 @@
 
 #include "base.h"
 
-#define PRINT_LOOP 1							// For debug prints
+#define PRINT_GPIB_DEBUG 1							// For debug prints
 
 #define GPIO0_NID DT_NODELABEL(gpio0)                       // Get the gpio0 identifier from the device tree
 #define GPIO1_NID DT_NODELABEL(gpio1)                       // Get the gpio0 identifier from the device tree
