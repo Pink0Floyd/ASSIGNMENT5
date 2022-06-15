@@ -5,8 +5,8 @@
 * This module contains functions to implement timer functionalities
 *
 * \author Filipe Loureiro & Miguel Silva
-* \date 14/06/22
-* \version 5.4
+* \date 15/06/22
+* \version 5.6
 * \bug Remains untested
 */
 
@@ -29,7 +29,6 @@ typedef struct time_data
 	uint16_t day;
 	uint16_t hour;
 	uint16_t min;
-	uint16_t sec;
 }time_data;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -41,11 +40,10 @@ typedef struct time_data
 // Public Member Functions
 
 void timer_init();
-void update_time(uint8_t sec);
-void update_time_sec(uint16_t sec);
+void update_time(uint8_t min);
 void update_time_min(uint16_t min);
 void update_time_hour(uint16_t hour);
 void update_time_day(uint16_t day);
-void set_time(uint16_t day,uint16_t hour,uint16_t min,uint16_t sec);
+void set_time(uint16_t day,uint16_t hour,uint16_t min);
 
 #endif

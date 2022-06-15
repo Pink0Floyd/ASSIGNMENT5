@@ -8,11 +8,6 @@ time_data time;
 
 void format_time()
 {
-	while(time.sec>=60)
-	{
-		time.sec-=60;
-		time.min++;
-	}
 	while(time.min>=60)
 	{
 		time.min-=60;
@@ -34,22 +29,15 @@ void format_time()
 
 void timer_init()
 {
-	time.sec=0;
 	time.min=0;
 	time.hour=0;
 	time.day=0;
 	printk("\tInitialised timer operation\n");
 }
 
-void update_time(uint8_t sec)
+void update_time(uint8_t min)
 {
-	update_time_sec(sec);
-}
-
-void update_time_sec(uint16_t sec)
-{
-	time.sec+=sec;
-	format_time();
+	update_time_min(min);
 }
 
 void update_time_min(uint16_t min)
@@ -70,11 +58,10 @@ void update_time_day(uint16_t day)
 	format_time();
 }
 
-void set_time(uint16_t day,uint16_t hour,uint16_t min,uint16_t sec)
+void set_time(uint16_t day,uint16_t hour,uint16_t min)
 {
 	time.day=day;
 	time.hour=hour;
 	time.min=min;
-	time.sec=sec;
 	format_time();
 }
