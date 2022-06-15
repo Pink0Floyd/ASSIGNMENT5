@@ -10,11 +10,6 @@ void init_str(char* str,uint16_t length,char c)
 	}
 }
 
-void init_str(char* str,uint16_t length)
-{	
-	init_str(str,length,'\0');
-}
-
 int16_t len_str(char* str)
 {
 	int16_t i=-1;
@@ -47,11 +42,6 @@ int16_t find_str_c(char* str,char c,uint16_t length)
 	return i;
 }
 
-int16_t find_str_c(char* str,char c)
-{	
-	return find_str_c(str,c,len_str(str));
-}
-
 int16_t find_str_cc(char* str,char ci,char cf,uint16_t length)
 {
 	int16_t i=-1;
@@ -61,11 +51,6 @@ int16_t find_str_cc(char* str,char ci,char cf,uint16_t length)
 		ci++;
 	}
 	return i;
-}
-
-int16_t find_str_cc(char* str,char ci,char cf)
-{
-	return find_str_cc(str,ci,cf,len_str(str));
 }
 
 int16_t find_str_str(char* str,char* str0,uint16_t length,uint16_t n)
@@ -114,13 +99,6 @@ int16_t find_str_str(char* str,char* str0,uint16_t length,uint16_t n)
 	return i;
 }
 
-int16_t find_str_str(char* str,char* str0)
-{
-	uint16_t length=len_str(str);
-	uint16_t n=len_str(str0);
-	return find_str_str(str,str0,len_str(str),len_str(str0));
-}
-
 void copy_str(char* str1,char* str2,uint16_t length)
 {
 	uint16_t k=0;
@@ -130,10 +108,4 @@ void copy_str(char* str1,char* str2,uint16_t length)
 		k++;
 	}
 	str2[k]='\0';
-}
-
-void copy_str(char* str1,char* str2)
-{
-	uint16_t length=len_str(str1);
-	copy_str(str1,str2,length);
 }
