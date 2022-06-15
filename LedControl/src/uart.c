@@ -25,14 +25,14 @@ void put_str(char* str)
 	}
 }
 
-void put_crlf()
+void put_eol()
 {
 	put_char('\r');
 	put_char('\n');
 }
 
 
-void put_ncrlf(uint8_t n)
+void put_neol(uint8_t n)
 {
 	put_char('\r');
 	while(n>0)
@@ -41,6 +41,20 @@ void put_ncrlf(uint8_t n)
 		n--;
 	}
 	put_char('\r');
+}
+
+void put_tab()
+{
+	put_char('\t');
+}
+
+void put_ntab(uint8_t n)
+{
+	while(n>0)
+	{
+		put_tab();
+		n--;
+	}
 }
 
 void get_str(char* str,char term)

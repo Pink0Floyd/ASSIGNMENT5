@@ -5,8 +5,8 @@
 * This module implements the functions to initialise and interact with the UART
 * 
 * \author Filipe Loureiro & Miguel Silva
-* \date 13/06/22
-* \version 5.2
+* \date 15/06/22
+* \version 5.3
 * \bug No bugs detected
 */
 
@@ -49,23 +49,42 @@ char get_char();
 void put_char(char c);
 
 /**
-*\brief crlf atomic function
+*\brief EOL atomic function
 *
 * Sends cr and lf characters through the UART
 *
 *\bug No bugs found
 */
-void put_crlf();
+void put_eol();
 
 /**
-*\brief crlf function
+*\brief EOL function
 *
 * Sends some cr and lf characters through the UART
 *
 *\param [IN] number of lf to be inserted
 *\bug No bugs found
 */
-void put_ncrlf(uint8_t n);
+void put_neol(uint8_t n);
+
+/**
+*\brief TAB function
+*
+* Sends a TAB character through the UART
+*
+*\bug No bugs found
+*/
+void put_tab();
+
+/**
+*\brief TAB function
+*
+* Sends some TAB characters through the UART
+*
+*\param [IN] number of tabs to be inserted
+*\bug No bugs found
+*/
+void put_ntab(uint8_t n);
 
 /**
 *\brief UART string transmission function
