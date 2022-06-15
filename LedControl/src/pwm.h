@@ -5,8 +5,8 @@
 * This module contains functions to implement PWM signals with variable duty-cycle
 *
 * \author Filipe Loureiro e Miguel Silva
-* \date 14/06/22
-* \version 5.6
+* \date 15/06/22
+* \version 5.7
 * \bug No bugs detected
 */
 
@@ -14,6 +14,7 @@
 #define _PWM_H 
 
 #include "base.h"
+#include <drivers/pwm.h>
 
 #define PWM0_NID DT_NODELABEL(pwm0)
 #define OUTPUT_PIN DT_PROP(PWM0_NID, ch0_pin)		///< define the pwm pin
@@ -34,9 +35,10 @@
 *
 * Initializes the PWM in order to use it 
 *
+* \param [IN] PWM frequency
 * \bug No bugs detected
 */
-void pwm_init();
+void pwm_init(uint32_t p);
 
 /**
 * \brief 

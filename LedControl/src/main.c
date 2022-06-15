@@ -11,8 +11,11 @@
 #define PRINT_INIT 1		///< enable for thread initialisation prints
 #define PRINT_LOOP 0		///< enable for thread loop prints
 
+#define PWM_PERIOD 1		///<< period for the PWM signal in microseconds
+
 #define SAMPLING_PERIOD 1000		///< sampling period in miliseconds
 #define BUTTOING_PERIOD 5000		///< buttons check period in miliseconds
+
 #define SAMPLING_PRIO 2			///< sampling thread priority
 #define FILTERING_PRIO 1		///< filtering thread priority
 #define CONTROLLING_PRIO 1		///< controlling thread priority
@@ -192,7 +195,9 @@ void uarting(void* A,void* B,void* C)
 	char str[144]={};
 	while(1)
 	{
-		
+		get_str(str,'\n');
+		if(PRINT_LOOP)
+		printk("Received string: %s\n",str);
 	}
 }
 
@@ -214,7 +219,7 @@ void main()
 	adc_init();
 	filter_init();
 
-	pwm_init();
+	pwm_init(PWM_PERIOD);
 
 	buttons_init(15);
 
