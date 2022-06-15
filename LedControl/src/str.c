@@ -60,7 +60,6 @@ int16_t find_str_str(char* str,char* str0,uint16_t length,uint16_t n)
 	int16_t aux=0;
 	uint16_t k=0;
 	uint16_t pos=0;
-	print_str(str);print_eol();
 	while(k<n)
 	{
 		aux=pos+find_str_c(&str[pos],str0[k],length-pos);
