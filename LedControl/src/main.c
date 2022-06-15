@@ -189,6 +189,7 @@ void uarting(void* A,void* B,void* C)
 	if(PRINT_INIT)
 	printk("Launched uarting thread\n");
 
+	char str[144]={};
 	while(1)
 	{
 		

@@ -1,11 +1,11 @@
 /**
-* \file gpio.h
+* \file buttons.h
 * \brief Buttons functions
 *
 * This module implements the functions to initialize and use the built in board buttons
 * \author Filipe Loureiro e Miguel Silva
-* \date 14/06/22
-* \version 5.2
+* \date 15/06/22
+* \version 5.3
 * \bug No bugs detected
 */
 
@@ -23,16 +23,20 @@
 #define BUTTON4 25                                          // BUTTON4 pin number of GPIO_0
 
 ///////////////////////////////////////////////////////////////////////////////////////
-//  Public Functions:
+// Private Functions:
+
+//void reset_flag(uint8_t n);
+//void buttons_callback_init(char n_buttons);
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Public Functions:
 
 /**
 * \brief Built in Buttons initialization function without interrupts
 *
 * Initializes the board buttons by using a byte for these porpouse, button 1 match to byte=1, button 2 match to byte=2, ect
 *
-* \author Filipe Loureiro
 * \param [IN] char n_buttons        -> byte corresponding to the buttons to activate
-
 * \bug No bugs detected
 */
 
@@ -44,7 +48,6 @@ void buttons_init(char n_buttons);
 *
 * Initializes the board buttons by using a byte for these porpouse, button 1 match to byte=1, button 2 match to byte=2, ect
 *
-* \author Filipe Loureiro
 * \param [IN] char n_buttons        -> byte corresponding to the buttons to activate
 * \param [IN] char c                -> 'H' or 'h' to interrupt at rising edge
                                     -> 'L' or 'l' to interrupt at falling edge
@@ -63,13 +66,5 @@ void buttons_init_(char n_buttons, char c);
 * \bug No bugs detected
 */
 uint8_t read_buttons(uint8_t button);
-
-
-///////////////////////////////////////////////////////////////////////////////////////
-//  Private Functions:
-
-//void buttons_callback_init(char n_buttons);
-// void reset_flags();
-
 
 #endif

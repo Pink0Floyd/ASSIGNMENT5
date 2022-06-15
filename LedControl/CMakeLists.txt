@@ -6,6 +6,7 @@ project(LedControl)
 
 target_sources(app PRIVATE src/base.c)
 target_sources(app PRIVATE src/gpio.c)
+target_sources(app PRIVATE src/str.c)
 target_sources(app PRIVATE src/adc.c)
 target_sources(app PRIVATE src/filter.c)
 target_sources(app PRIVATE src/control.c)
