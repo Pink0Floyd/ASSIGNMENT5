@@ -7,14 +7,16 @@
 #include "pwm.h"
 #include "buttons.h"
 #include "uart.h"
+#include "timer.h"
 
 #define PRINT_INIT 1		///< enable for thread initialisation prints
-#define PRINT_LOOP 0		///< enable for thread loop prints
+#define PRINT_LOOP 1		///< enable for thread loop prints
 
 #define PWM_PERIOD 1		///<< period for the PWM signal in microseconds
 
 #define SAMPLING_PERIOD 1000		///< sampling period in miliseconds
 #define BUTTOING_PERIOD 5000		///< buttons check period in miliseconds
+#define TIMING_PERIOD 6000		///< timing period in miliseconds
 
 #define SAMPLING_PRIO 2			///< sampling thread priority
 #define FILTERING_PRIO 1		///< filtering thread priority
@@ -176,7 +178,7 @@ void buttoing(void* A,void* B,void* C)
 		button_flag=read_buttons(4)*8+read_buttons(3)*4+read_buttons(2)*2+read_buttons(1)*1;
 
 		if(PRINT_LOOP)
-		printk("Buttoing: %u read from buttons\n",button_flag);
+		printk("buttoing: %u read from buttons\n",button_flag);
 
 		curr_time=k_uptime_get();				// sleep until next sampling period
 		if(curr_time<end_time)					// sleep until next sampling period
@@ -197,7 +199,7 @@ void uarting(void* A,void* B,void* C)
 	{
 		get_str(str,'\n');
 		if(PRINT_LOOP)
-		printk("Received string: %s\n",str);
+		printk("uarting: Received string: %s\n",str);
 	}
 }
 
@@ -206,9 +208,20 @@ void timing(void* A,void* B,void* C)
 	if(PRINT_INIT)
 	printk("Launched timing thread\n");
 
+	int64_t curr_time=k_uptime_get();
+	int64_t end_time=k_uptime_get()+TIMING_PERIOD;
 	while(1)
 	{
-		
+		update_time(1);						// advance a minute
+		if(PRINT_LOOP)
+		printk("timing: A minute has passed\n");
+
+		curr_time=k_uptime_get();				// sleep until next sampling period
+		if(curr_time<end_time)					// sleep until next sampling period
+		{								// sleep until next sampling period
+			k_msleep(end_time-curr_time);			// sleep until next sampling period
+		}								// sleep until next sampling period
+		end_time+=TIMING_PERIOD;				// sleep until next sampling period
 	}
 }
 
