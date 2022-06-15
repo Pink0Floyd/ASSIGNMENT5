@@ -6,15 +6,16 @@
 * 
 * \author Filipe Loureiro & Miguel Silva
 * \date 15/06/22
-* \version 5.3
+* \version 5.5
 * \bug No bugs detected
 */
 
 #ifndef _UART_H
 #define _UART_H
 
-#include "base.h"
+#include <math.h>
 #include <console/console.h>
+#include "base.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //  Public Functions:
@@ -125,131 +126,5 @@ void put_uint4(uint8_t i);
 *\bug No bugs found
 */
 uint8_t get_uint4();
-
-/**
-*\brief UART unsigned integer atomic transmission function
-*
-* Sends 8 bits as a hexadecimal characters
-*
-*\param [IN] value to be transmitted
-*\param [IN] option to print "Ox" to indicate hexadecimal number
-*\bug No bugs found
-*/
-void put_uint8(uint8_t i,uint8_t Ox);
-
-/**
-*\brief UART unsigned integer reception function
-*
-* Receives 8 bits as a hexadecimal character
-*
-*\return value received
-*\bug No bugs found
-*/
-uint8_t get_uint8();
-
-/**
-*\brief UART unsigned integer transmission function
-*
-* Sends 16 bits as a hexadecimal characters
-*
-*\param [IN] value to be transmitted
-*\param [IN] option to print "Ox" to indicate hexadecimal number
-*\bug No bugs found
-*/
-void put_uint16(uint16_t i,uint8_t Ox);
-
-/**
-*\brief UART unsigned integer reception function
-*
-* Receives 16 bits as a hexadecimal character
-*
-*\return value received
-*\bug No bugs found
-*/
-uint16_t get_uint16();
-
-/**
-*\brief UART unsigned integer transmission function
-*
-* Sends 32 bits as a hexadecimal characters
-*
-*\param [IN] value to be transmitted
-*\param [IN] option to print "Ox" to indicate hexadecimal number
-*\bug No bugs found
-*/
-void put_uint32(uint32_t i,uint8_t Ox);
-
-/**
-*\brief UART unsigned integer reception function
-*
-* Receives 32 bits as a hexadecimal character
-*
-*\return value received
-*\bug No bugs found
-*/
-uint32_t get_uint32();
-
-/**
-*\brief UART unsigned integer transmission function
-*
-* Sends 64 bits as a hexadecimal characters
-*
-*\param [IN] value to be transmitted
-*\param [IN] option to print "Ox" to indicate hexadecimal number
-*\bug No bugs found
-*/
-void put_uint64(uint64_t i,uint8_t Ox);
-
-/**
-*\brief UART unsigned integer reception function
-*
-* Receives 64 bits as a hexadecimal character
-*
-*\return value received
-*\bug No bugs found
-*/
-uint64_t get_uint64();
-
-/**
-*\brief UART integer transmission function
-*
-* Transmits an integer via UART
-*
-*\param [IN] integer to be transmitted
-*\bug No bugs found
-*/
-void put_int(int i);
-
-/**
-*\brief UART integer reception function
-*
-* Receives an integer via UART
-*
-*\return integer received
-*\bug No bugs found
-*/
-int get_int();
-
-/**
-*\brief UART float transmission function
-*
-* Transmits a float via UART
-*
-*\param [IN] float to be transmitted
-*\bug No bugs found
-*/
-void put_float(float f);
-
-/**
-*\brief UART float transmission function
-*
-* Transmits a float via UART
-*
-*\param [IN] float to be transmitted
-*\param [IN] number of integer algarisms
-*\param [IN] number of floating algarisms
-*\bug No bugs found
-*/
-void put_float_(float f,uint8_t ni,uint8_t nf);
 
 #endif
