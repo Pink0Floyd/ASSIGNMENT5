@@ -17,10 +17,12 @@ void pwm_init()
       printk("\tInitialised PWM module\n");
 }
 
-void pwm_led_set(uint16_t duty_cycle)
+void pwm_led_set(uint8_t dutycycle)
 {
+	dutycycle=saturation(dutycycle,PWM_DUTYCYCLE_MIN,PWM_DUTYCYCLE_MAX);
+	dutycycle=PWM_DUTYCYCLE_MAX-dutycycle+PWM_DUTYCYCLE_MIN;
       int ret[4]={};
-      ret[0] = pwm_pin_set_usec(pwm0_dev, LED1, pwmPeriod_us,(unsigned int)(pwmPeriod_us*duty_cycle/100), PWM_POLARITY_NORMAL);
+      ret[0] = pwm_pin_set_usec(pwm0_dev, OUTPUT_PIN, pwmPeriod_us,(unsigned int)(pwmPeriod_us*dutycycle/100), PWM_POLARITY_NORMAL);
       if (ret[0]+ret[1]+ret[2]+ret[3]!=0)
 	{
 		printk("\tError: failed to set pulse width\n");
