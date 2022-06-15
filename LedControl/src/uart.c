@@ -1,3 +1,4 @@
+
 #include "uart.h"
 
 void uart_init()
@@ -84,7 +85,7 @@ void put_uint4(uint8_t i)
 
 uint8_t get_uint4()
 {
-	char aux=get_Ox();
+	char aux=get_char();
 	if(aux>='0'&&aux<='9')
 	{
 		return (uint8_t)(aux-'0');
@@ -103,65 +104,9 @@ uint8_t get_uint4()
 	}
 }
 
-void put_uint8(uint8_t i,uint8_t Ox)
-{
-	put_Ox(Ox);
-	put_uint4(i/0x10);
-	put_uint4(i%0x10);
-}
-
-uint8_t get_uint8()
-{
-	put_str("Ox__\b\b\b\bOx");
-	return get_uint4()*0x10+get_uint4();
-}
-
-void put_uint16(uint16_t i,uint8_t Ox)
-{
-	put_Ox(Ox);
-	put_uint8(i/0x100,0);
-	put_uint8(i%0x100,0);
-}
-
-uint16_t get_uint16()
-{
-	put_str("Ox____\b\b\b\b\b\bOx");
-	return get_uint4()*0x1000+get_uint4()*0x100+get_uint4()*0x10+get_uint4();
-}
-
-void put_uint32(uint32_t i,uint8_t Ox)
-{
-	put_Ox(Ox);
-	put_uint16(i/0x10000,0);
-	put_uint16(i%0x10000,0);
-}
-
-uint32_t get_uint32()
-{
-	put_str("Ox________\b\b\b\b\b\b\b\b\b\bOx");
-	return get_uint4()*0x10000000+get_uint4()*0x1000000+get_uint4()*0x100000+get_uint4()*0x10000+get_uint4()*0x1000+get_uint4()*0x100+get_uint4()*0x10+get_uint4();
-}
-
-void put_uint64(uint64_t i,uint8_t Ox)
-{
-	put_Ox(Ox);
-	put_uint32(i/0x100000000,0);
-	put_uint32(i%0x100000000,0);
-}
-
-uint64_t get_uint64()
-{
-	put_str("Ox________________\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\bOx");
-	uint64_t aux1=get_uint4()*0x10000000+get_uint4()*0x1000000+get_uint4()*0x100000+get_uint4()*0x10000+get_uint4()*0x1000+get_uint4()*0x100+get_uint4()*0x10+get_uint4();
-	uint64_t aux2=get_uint4()*0x10000000+get_uint4()*0x1000000+get_uint4()*0x100000+get_uint4()*0x10000+get_uint4()*0x1000+get_uint4()*0x100+get_uint4()*0x10+get_uint4();
-	return aux1*0x10000000+aux2;
-}
-
 void put_int(int i)
 {
-	uint8_t flag=0;
 	uint8_t k=INT_SIZE;
-	int aux=0;
 	if(i<0)
 	{
 		i=-i;
