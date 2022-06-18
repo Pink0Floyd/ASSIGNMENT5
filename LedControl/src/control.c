@@ -1,11 +1,20 @@
 
 #include "control.h"
 
+static float control_kp;
+static float control_ki;
+
 static float prop_error;
 static float int_error;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Public Member Functions
+
+void control_init(float kp,float ki)
+{
+	control_kp=kp;
+	control_ki=ki;
+}
 
 float controller(float curr,float target)
 {
@@ -17,6 +26,6 @@ float controller(float curr,float target)
 	int_error=int_error*DECAY_FACTOR;							// integral error
 	int_error=saturation(int_error,MIN_INT_ERROR,MAX_INT_ERROR);		// integral error
 
-	float r=(KP*prop_error+KI*int_error);
+	float r=(control_kp*prop_error+control_ki*int_error);
 	return saturation(r,MIN_CONTROLLER_VALUE,MAX_CONTROLLER_VALUE);
 }

@@ -5,8 +5,8 @@
 * This module contains functions to implement the controller
 *
 * \author Filipe Loureiro & Miguel Silva
-* \date 13/06/22
-* \version 5.7
+* \date 18/06/22
+* \version 5.8
 * \bug No bugs found
 */
 
@@ -22,12 +22,10 @@
 #define MIN_CONTROLLER_VALUE 4
 #define MAX_CONTROLLER_VALUE 96
 
-#define KP 6
-#define KI 2
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Public Member Functions
 
+void control_init(float kp,float ki);
 float controller(float curr,float target);
 
 #endif

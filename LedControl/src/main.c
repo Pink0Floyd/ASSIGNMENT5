@@ -18,6 +18,11 @@
 #define BUTTOING_PERIOD 12000		///< buttons check period in miliseconds
 #define TIMING_PERIOD 600000		///< timing period in miliseconds
 
+#define KP 6
+#define KI 2
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 #define SAMPLING_PRIO 2			///< sampling thread priority
 #define FILTERING_PRIO 1		///< filtering thread priority
 #define CONTROLLING_PRIO 1		///< controlling thread priority
@@ -63,7 +68,9 @@ uint16_t filt_in;				///< shared memory between sampling and filtering
 uint16_t contr_in;			///< shared memory between filtering and controlling
 uint16_t act_in;				///< shared memory between controlling and actuating
 
-uint8_t button_flag;			///< global variable for button 1	    
+uint8_t button_flag;			///< global variable for button 1
+
+uint8_t state=1;				///< state for the state machine    
 
 float target=50;
 
@@ -174,8 +181,7 @@ void buttoing(void* A,void* B,void* C)
 	int64_t end_time=k_uptime_get()+BUTTOING_PERIOD;
 	while(1)
 	{
-		// read buttons
-		button_flag=read_buttons(4)*8+read_buttons(3)*4+read_buttons(2)*2+read_buttons(1)*1;
+		button_flag=read_buttons(4)*8+read_buttons(3)*4+read_buttons(2)*2+read_buttons(1)*1;		// read buttons
 
 		if(PRINT_LOOP)
 		printk("buttoing: %u read from buttons\n",button_flag);
@@ -196,13 +202,13 @@ void uarting(void* A,void* B,void* C)
 	if(PRINT_INIT)
 	printk("Launched uarting thread\n");
 
-	char str[144]={};/*
+	char str[144]={};
 	while(1)
 	{
 		get_str(str,'\n');
 		if(PRINT_LOOP)
 		printk("uarting: Received string: %s\n",str);
-	}*/
+	}
 }
 
 void timing(void* A,void* B,void* C)
@@ -227,20 +233,39 @@ void timing(void* A,void* B,void* C)
 	}
 }
 
+void state_machine()
+{	
+	while(state==1||state==2)
+	{
+		switch(state)
+		{
+			case 1:							// start of state 1 (manual state)
+				
+				break;						// end of state 1 (manual state)
+
+			case 2:							// start of state 2 (automatic state)
+				
+				break;						// end of state 2 (automatic state)
+		}
+		
+	}
+
+	printk("ERROR in State Machine : Unknown State\n");
+}
+
 void main()
 {
 	printk("\n\n\nLed Controller \n");
 
 	adc_init();
 	filter_init();
-
+	control_init(KI,KP);
 	pwm_init(PWM_PERIOD);
+	buttons_init_(15,'h');
 
-	buttons_init(15);
-
-	k_sem_init(&sem_samp,0,1);
-	k_sem_init(&sem_filt,0,1);
-	k_sem_init(&sem_contr,0,1);
+	k_sem_init(&sem_samp,0,1);		// init sampling finished semafore
+	k_sem_init(&sem_filt,0,1);		// init filtering finished semafore
+	k_sem_init(&sem_contr,0,1);		// init controlling finished semafore
 
 	sampling_tid=k_thread_create(&sampling_data,sampling_stack,K_THREAD_STACK_SIZEOF(sampling_stack),			// create sampling thread
 		sampling,NULL,NULL,NULL,SAMPLING_PRIO,0,K_NO_WAIT);										// create sampling thread
@@ -259,4 +284,6 @@ void main()
 
 	uarting_tid=k_thread_create(&uarting_data,uarting_stack,K_THREAD_STACK_SIZEOF(uarting_stack),				// create uarting thread
 		uarting,NULL,NULL,NULL,UARTING_PRIO,0,K_NO_WAIT);										// create uarting thread
+
+	state_machine();
 }
