@@ -208,6 +208,7 @@ void buttons_init_(char n_buttons, char c)
       }
 
       buttons_callback_init(n_buttons);
+	printk("\tInitialised buttons module\n");
 }
 
 uint8_t read_buttons(uint8_t button)

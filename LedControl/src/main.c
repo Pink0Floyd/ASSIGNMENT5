@@ -18,6 +18,9 @@
 #define BUTTOING_PERIOD 100000		///< buttons check period in miliseconds
 #define TIMING_PERIOD 600000		///< timing period in miliseconds
 
+#define STATE_MACHINE_PERIOD 1000		///< state machine period in miliseconds
+#define INITIAL_STATE 1
+
 #define KP 6
 #define KI 2
 
@@ -70,7 +73,7 @@ uint16_t act_in;				///< shared memory between controlling and actuating
 
 uint8_t button_flag;			///< global variable for button 1
 
-uint8_t state=1;				///< state for the state machine    
+uint8_t state=INITIAL_STATE;		///< state for the state machine    
 
 float target=50;
 
@@ -91,12 +94,12 @@ void sampling(void* A,void* B,void* C)
 		if(PRINT_LOOP)
 		printk("sampling: finished sampling\n");
 
-		curr_time=k_uptime_get();				// sleep until next sampling period
-		if(curr_time<end_time)					// sleep until next sampling period
-		{								// sleep until next sampling period
-			k_msleep(end_time-curr_time);			// sleep until next sampling period
-		}								// sleep until next sampling period
-		end_time+=SAMPLING_PERIOD;				// sleep until next sampling period
+		curr_time=k_uptime_get();				// sleep until next period
+		if(curr_time<end_time)					// sleep until next period
+		{								// sleep until next period
+			k_msleep(end_time-curr_time);			// sleep until next period
+		}								// sleep until next period
+		end_time+=SAMPLING_PERIOD;				// sleep until next period
 	}
 }
 
@@ -178,12 +181,12 @@ void buttoing(void* A,void* B,void* C)
 		if(PRINT_LOOP)
 		printk("buttoing: %u read from buttons\n",button_flag);
 
-		curr_time=k_uptime_get();				// sleep until next sampling period
-		if(curr_time<end_time)					// sleep until next sampling period
-		{								// sleep until next sampling period
-			k_msleep(end_time-curr_time);			// sleep until next sampling period
-		}								// sleep until next sampling period
-		end_time+=BUTTOING_PERIOD;				// sleep until next sampling period
+		curr_time=k_uptime_get();				// sleep until next period
+		if(curr_time<end_time)					// sleep until next period
+		{								// sleep until next period
+			k_msleep(end_time-curr_time);			// sleep until next period
+		}								// sleep until next period
+		end_time+=BUTTOING_PERIOD;				// sleep until next period
 	}
 }
 
@@ -197,7 +200,7 @@ void uarting(void* A,void* B,void* C)
 	{
 		if(state==2)
 		{
-			get_int();
+			i=get_int();
 			if(PRINT_LOOP)
 			printk("uarting: Received int %i\n",i);
 		}
@@ -217,17 +220,20 @@ void timing(void* A,void* B,void* C)
 		if(PRINT_LOOP)
 		printk("timing: A minute has passed\n");
 
-		curr_time=k_uptime_get();				// sleep until next sampling period
-		if(curr_time<end_time)					// sleep until next sampling period
-		{								// sleep until next sampling period
-			k_msleep(end_time-curr_time);			// sleep until next sampling period
-		}								// sleep until next sampling period
-		end_time+=TIMING_PERIOD;				// sleep until next sampling period
+		curr_time=k_uptime_get();				// sleep until next period
+		if(curr_time<end_time)					// sleep until next period
+		{								// sleep until next period
+			k_msleep(end_time-curr_time);			// sleep until next period
+		}								// sleep until next period
+		end_time+=TIMING_PERIOD;				// sleep until next period
 	}
 }
 
 void state_machine()
 {	
+	int64_t curr_time=k_uptime_get();
+	int64_t end_time=k_uptime_get()+STATE_MACHINE_PERIOD;
+
 	while(state==1||state==2)
 	{
 		switch(state)
@@ -247,6 +253,12 @@ void state_machine()
 				break;						// end of state 2 (automatic state)
 		}
 		
+		curr_time=k_uptime_get();				// sleep until next period
+		if(curr_time<end_time)					// sleep until next period
+		{								// sleep until next period
+			k_msleep(end_time-curr_time);			// sleep until next period
+		}								// sleep until next period
+		end_time+=STATE_MACHINE_PERIOD;			// sleep until next period
 	}
 
 	printk("ERROR in State Machine : Unknown State\n");
@@ -266,6 +278,8 @@ void main()
 	k_sem_init(&sem_samp,0,1);		// init sampling finished semafore
 	k_sem_init(&sem_filt,0,1);		// init filtering finished semafore
 	k_sem_init(&sem_contr,0,1);		// init controlling finished semafore
+
+	printk("hello\n");
 
 	sampling_tid=k_thread_create(&sampling_data,sampling_stack,K_THREAD_STACK_SIZEOF(sampling_stack),			// create sampling thread
 		sampling,NULL,NULL,NULL,SAMPLING_PRIO,0,K_NO_WAIT);										// create sampling thread
