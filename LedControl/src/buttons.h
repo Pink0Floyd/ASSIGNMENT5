@@ -15,7 +15,7 @@
 #include "base.h"
 #include "gpio.h"
 	    
-#define PRINT_BUTTONS_DEBUG 1						// For debug prints				  
+#define PRINT_BUTTONS_DEBUG 1				    // For debug prints				  
 
 #define BUTTON1 11                                          // BUTTON1 pin number of GPIO_0
 #define BUTTON2 12                                          // BUTTON2 pin number of GPIO_0

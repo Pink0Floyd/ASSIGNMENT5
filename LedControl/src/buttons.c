@@ -125,7 +125,6 @@ void buttons_callback_init(char n_buttons)
 void buttons_init(char n_buttons)                                     // Initialize the board's buttons  
 {
 	gpio0_dev=gpio0_init();
-	buttons_callback_init(n_buttons);
       int i=0;
       int ret=0;
 
