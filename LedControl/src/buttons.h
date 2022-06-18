@@ -4,7 +4,7 @@
 *
 * This module implements the functions to initialize and use the built in board buttons
 * \author Filipe Loureiro e Miguel Silva
-* \date 15/06/22
+* \date 18/06/22
 * \version 5.3
 * \bug No bugs detected
 */
@@ -15,7 +15,7 @@
 #include "base.h"
 #include "gpio.h"
 	    
-#define PRINT_BUTTONS_DEBUG 0						// For debug prints				  
+#define PRINT_BUTTONS_DEBUG 1						// For debug prints				  
 
 #define BUTTON1 11                                          // BUTTON1 pin number of GPIO_0
 #define BUTTON2 12                                          // BUTTON2 pin number of GPIO_0

@@ -124,25 +124,23 @@ void buttons_callback_init(char n_buttons)
 //  Public Functions:
 void buttons_init(char n_buttons)                                     // Initialize the board's buttons  
 {
-      gpio0_dev=gpio0_init();
+	gpio0_dev=gpio0_init();
+	buttons_callback_init(n_buttons);
       int i=0;
       int ret=0;
 
       for(i=0; i<4; i++)
       {
-	    if((n_buttons & buttons_pos[i]) == buttons_pos[i])
-	    {
-		  if(PRINT_BUTTONS_DEBUG)
-		  {
-			printk("%d\n\r",buttons_pos[i]);
-		  }
-		  ret = gpio_pin_configure(gpio0_dev, buttons_pin[i], GPIO_INPUT | GPIO_PULL_UP);
-		  if (ret < 0) 
-		  {
-			printk("Error %d: Failed to configure Button %d \n\r", ret, (i+1));
-			return;
-		  }
-	    }
+		if((n_buttons & buttons_pos[i]) == buttons_pos[i])
+		{
+			
+			ret = gpio_pin_configure(gpio0_dev, buttons_pin[i], GPIO_INPUT | GPIO_PULL_UP);
+			if (ret < 0) 
+			{
+				printk("Error %d: Failed to configure Button %d \n\r", ret, (i+1));
+				i=5;
+			}
+		}
       }
 }
 
