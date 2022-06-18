@@ -112,6 +112,7 @@ void set_interval(uint8_t n,time_data s,time_data f)
 
 uint8_t check_interval()
 {
+	uint8_t r=N_INTERVAL;
 	uint8_t k=0;
 	while(k<N_INTERVAL)
 	{
@@ -119,12 +120,13 @@ uint8_t check_interval()
 		{
 			if(compare_time(time,time_interval[k].finish)==1)
 			{
+				r=k;
 				break;
 			}
 		}
 		k++;
 	}
-	return k;
+	return r;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

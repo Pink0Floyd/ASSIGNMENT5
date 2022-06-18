@@ -49,3 +49,17 @@ void set_period()
 	time_data f=get_finish();
 	set_interval(n,s,f);
 }
+
+uint8_t get_light()
+{
+	uint8_t r=check_interval();
+	if(r!=N_INTERVAL)
+	{
+		r=li[r];
+	}
+	else
+	{
+		r=MIN_LIGHT;
+	}
+	return r;
+}

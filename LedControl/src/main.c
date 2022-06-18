@@ -249,6 +249,11 @@ void scheduling(void* A,void* B,void* C)
 		if(PRINT_LOOP)
 		printk("scheduling: waiting for timing to finish\n");
 		k_sem_take(&sem_tim,K_FOREVER);
+		if(PRINT_LOOP)
+		printk("scheduling: timing has finished\n");
+
+
+
 	}
 }
 
