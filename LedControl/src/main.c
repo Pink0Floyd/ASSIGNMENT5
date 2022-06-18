@@ -34,6 +34,7 @@
 #define BUTTONING_PRIO 3		///< buttoing thread priority
 #define UARTING_PRIO 3			///< uarting thread priority
 #define TIMING_PRIO 4			///< timing thread priority
+#define SCHEDULING_PRIO 1		///< scheduling thread priority
 
 #define SAMPLING_STACK_SIZE 512						///< sampling thread stack size
 K_THREAD_STACK_DEFINE(sampling_stack,SAMPLING_STACK_SIZE);		///< sampling thread stack size
@@ -48,7 +49,9 @@ K_THREAD_STACK_DEFINE(buttoing_stack,BUTTOING_STACK_SIZE);		///< buttoing thread
 #define UARTING_STACK_SIZE 512						///< uarting thread stack size
 K_THREAD_STACK_DEFINE(uarting_stack,UARTING_STACK_SIZE);		///< uarting thread stack size
 #define TIMING_STACK_SIZE 512							///< timing thread stack size
-K_THREAD_STACK_DEFINE(uarting_stack,UARTING_STACK_SIZE);		///< timing thread stack size
+K_THREAD_STACK_DEFINE(timing_stack,TIMING_STACK_SIZE);		///< timing thread stack size
+#define SCHEDULING_STACK_SIZE 512						///< timing thread stack size
+K_THREAD_STACK_DEFINE(scheduling_stack,SCHEDULING_STACK_SIZE);	///< timing thread stack size
 
 struct k_thread sampling_data;	///< sampling thread initialisation
 k_tid_t sampling_tid;			///< sampling thread initialisation
@@ -64,15 +67,18 @@ struct k_thread uarting_data;		///< uarting thread initialisation
 k_tid_t uarting_tid;			///< uarting thread initialisation
 struct k_thread timing_data;		///< timing thread initialisation
 k_tid_t timing_tid;			///< timing thread initialisation
+struct k_thread scheduling_data;	///< scheduling thread initialisation
+k_tid_t scheduling_data;		///< scheduling thread initialisation
 
 struct k_sem sem_samp;			///< sampling finished semafore
 struct k_sem sem_filt;			///< filtering finished semafore
 struct k_sem sem_contr;			///< controlling finished semafore
+struct k_sem sem_tim;			///< timing finished semafore
+
 uint16_t filt_in;				///< shared memory between sampling and filtering
 uint16_t contr_in;			///< shared memory between filtering and controlling
 uint16_t act_in;				///< shared memory between controlling and actuating
-
-uint8_t button_flag;			///< global variable for button 1
+uint8_t button_flag;			///< shared memory between buttoing and the state machine
 
 uint8_t state=INITIAL_STATE;		///< state for the state machine    
 
@@ -219,7 +225,10 @@ void timing(void* A,void* B,void* C)
 	{
 		update_time(1);						// advance a minute
 		if(PRINT_LOOP)
-		printk("timing: A minute has passed\n");
+		printk("timing: a minute has passed\n");
+		k_sem_give(&sem_tim);
+		if(PRINT_LOOP)
+		printk("timing: finished timing\n");
 
 		curr_time=k_uptime_get();				// sleep until next period
 		if(curr_time<end_time)					// sleep until next period
@@ -227,6 +236,19 @@ void timing(void* A,void* B,void* C)
 			k_msleep(end_time-curr_time);			// sleep until next period
 		}								// sleep until next period
 		end_time+=TIMING_PERIOD;				// sleep until next period
+	}
+}
+
+void scheduling(void* A,void* B,void* C)
+{
+	if(PRINT_INIT)
+	printk("Launched scheduling thread\n");
+
+	while(1)
+	{
+		if(PRINT_LOOP)
+		printk("scheduling: waiting for timing to finish\n");
+		k_sem_take(&sem_tim,K_FOREVER);
 	}
 }
 
@@ -275,12 +297,12 @@ void main()
 	pwm_init(PWM_PERIOD);
 	buttons_init_(15,'h');
 	uart_init();
+	timer_init();
 
 	k_sem_init(&sem_samp,0,1);		// init sampling finished semafore
 	k_sem_init(&sem_filt,0,1);		// init filtering finished semafore
 	k_sem_init(&sem_contr,0,1);		// init controlling finished semafore
-
-	printk("hello\n");
+	k_sem_init(&sem_tim,0,1);		// init timing finished semafore
 
 	sampling_tid=k_thread_create(&sampling_data,sampling_stack,K_THREAD_STACK_SIZEOF(sampling_stack),			// create sampling thread
 		sampling,NULL,NULL,NULL,SAMPLING_PRIO,0,K_NO_WAIT);										// create sampling thread
@@ -299,6 +321,12 @@ void main()
 
 	uarting_tid=k_thread_create(&uarting_data,uarting_stack,K_THREAD_STACK_SIZEOF(uarting_stack),				// create uarting thread
 		uarting,NULL,NULL,NULL,UARTING_PRIO,0,K_NO_WAIT);										// create uarting thread
+
+	timing_tid=k_thread_create(&timing_data,timing_stack,K_THREAD_STACK_SIZEOF(timing_stack),					// create timing thread
+		timing,NULL,NULL,NULL,TIMING_PRIO,0,K_NO_WAIT);											// create timing thread
+
+	scheduling_tid=k_thread_create(&scheduling_data,scheduling_stack,K_THREAD_STACK_SIZEOF(scheduling_stack),		// create scheduling thread
+		scheduling,NULL,NULL,NULL,SCHEDULING_PRIO,0,K_NO_WAIT);									// create scheduling thread
 
 	state_machine();
 }

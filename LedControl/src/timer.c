@@ -62,7 +62,7 @@ void timer_init()
 		k++;
 	}
 
-	printk("\tInitialised timer operation\n");
+	printk("\tInitialised timer module\n");
 }
 
 void update_time(uint8_t min)
