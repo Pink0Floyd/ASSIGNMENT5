@@ -262,6 +262,7 @@ void main()
 	control_init(KI,KP);
 	pwm_init(PWM_PERIOD);
 	buttons_init_(15,'h');
+	uart_init();
 
 	k_sem_init(&sem_samp,0,1);		// init sampling finished semafore
 	k_sem_init(&sem_filt,0,1);		// init filtering finished semafore

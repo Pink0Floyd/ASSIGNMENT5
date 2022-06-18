@@ -5,8 +5,8 @@
 * This module implements the functions to initialise and interact with the UART
 * 
 * \author Filipe Loureiro & Miguel Silva
-* \date 15/06/22
-* \version 5.6
+* \date 18/06/22
+* \version 5.7
 * \bug No bugs detected
 */
 

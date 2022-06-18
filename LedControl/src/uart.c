@@ -16,16 +16,6 @@ void put_char(char c)
       console_putchar(c);
 }
 
-void put_str(char* str)
-{
-	uint8_t k=0;
-	while(str[k]!='\0'&&k<0xffff)
-	{
-		put_char(str[k]);
-		k++;
-	}
-}
-
 void put_eol()
 {
 	put_char('\r');
@@ -58,48 +48,49 @@ void put_ntab(uint8_t n)
 	}
 }
 
-void get_str(char* str,char term)
+void put_str(char* str)
 {
 	uint8_t k=0;
-	do
+	while(str[k]!='\0'&&k<0xffff)
 	{
-		str[k]=get_char();
+		put_char(str[k]);
 		k++;
 	}
-	while(str[k-1]!=term);
-	str[k-1]='\0';
 }
 
-void put_uint4(uint8_t i)
+int get_int()
 {
-	i=i%0x10;
-	if(i<10)
+	int i=0;
+	int signal=1;
+	uint8_t k=INT_SIZE;
+	
+	char c=get_char();
+	if(c=='-')
 	{
-		put_char('0'+i);
+		signal=-1;
+		c=get_char();
+	}
+	
+	if(c>='0'&&c<='9')
+	{
+		i=(int)(c-'0');
+		k--;
 	}
 	else
 	{
-		put_char('a'+i-10);
+		k=0;
 	}
-}
-
-uint8_t get_uint4()
-{
-	char aux=get_char();
-	if(aux>='0'&&aux<='9')
+	
+	while(k>0)
 	{
-		return (uint8_t)(aux-'0');
-	}
-	else if(aux>='a'&&aux<='f')
-	{
-		return (uint8_t)(aux+10-'a');
-	}
-	else if(aux>='A'&&aux<='F')
-	{
-		return (uint8_t)(aux+10-'A');
-	}
-	else
-	{
-		return 0;
-	}
+		c=get_char();
+		if(c<'0'||c>'9')
+		{
+			break;
+		}
+		i=i*10+((int)(c-'0'));
+		k--;
+	}	
+	
+	return i*signal;
 }
