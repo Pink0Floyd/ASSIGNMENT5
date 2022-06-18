@@ -2,8 +2,8 @@
 
 // Global Variables:
 
-static const struct device *pwm0_dev;		// pointer to PWM device structure 
-static uint32_t period;					// PWM period in microseconds
+static const struct device *pwm0_dev;			    // pointer to PWM device structure 
+static uint32_t period;					    // PWM period in microseconds
 
 void pwm_init(uint32_t p)
 {
