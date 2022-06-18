@@ -96,6 +96,7 @@ void set_time(time_data t)
 
 void set_interval(uint8_t n,time_data s,time_data f)
 {
+	n=saturation(n,0,N_INTERVAL-1);
 	int16_t i=compare_time(s,f);
 	if(i==1)
 	{
