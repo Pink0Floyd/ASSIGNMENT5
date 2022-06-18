@@ -5,22 +5,19 @@
 * This module contains functions to implement timer functionalities
 *
 * \author Filipe Loureiro & Miguel Silva
-* \date 15/06/22
-* \version 5.6
+* \date 18/06/22
+* \version 5.7
 * \bug Remains untested
 */
 
 #ifndef _TIMER_H
 #define _TIMER_H
 
-#define MIN_SEC 0
-#define MAX_SEC 60
-#define MIN_MIN 0
-#define MAX_MIN 60
-#define MIN_HOUR 0
-#define MAX_HOUR 24
-#define MIN_DAY 0
-#define MAX_DAY 7
+#define HOUR_DURATION 60
+#define DAY_DURATION 24
+#define WEEK_DURATION 7
+
+#define N_INTERVAL ((WEEK_DURATION+1)*2)
 
 #include "base.h"
 
@@ -31,10 +28,17 @@ typedef struct time_data
 	uint16_t min;
 }time_data;
 
+typedef struct time_interval_data
+{
+	time_data start;
+	time_data finish;
+}time_interval_data;
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Private Member Functions
 
 //void format_time()
+//int8_t compare_time(time_data t1,time_data t2);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Public Member Functions
@@ -44,6 +48,8 @@ void update_time(uint8_t min);
 void update_time_min(uint16_t min);
 void update_time_hour(uint16_t hour);
 void update_time_day(uint16_t day);
-void set_time(uint16_t day,uint16_t hour,uint16_t min);
+void set_time(time_data t);
+void set_interval(uint8_t n,time_data s,time_data f);
+uint8_t check_interval();
 
 #endif
