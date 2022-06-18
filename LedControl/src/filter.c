@@ -49,7 +49,7 @@ void filter_init()
 	buffer.pointer=FILTER_BUFFER_SIZE-1;
 	buffer.count=0;
 	buffer.samples_avg=0;
-	printk("\tInitialised filter operation\n");
+	printk("\tInitialised filter module\n");
 }
 
 float filter(uint16_t in)

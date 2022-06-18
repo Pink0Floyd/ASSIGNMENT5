@@ -14,6 +14,8 @@ void control_init(float kp,float ki)
 {
 	control_kp=kp;
 	control_ki=ki;
+
+	printk("\tInitialised controller module\n");
 }
 
 float controller(float curr,float target)
