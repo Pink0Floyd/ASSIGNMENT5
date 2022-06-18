@@ -8,6 +8,7 @@
 #include "buttons.h"
 #include "uart.h"
 #include "timer.h"
+#include "schedule.h"
 
 #define PRINT_INIT 1			///< enable for thread initialisation prints
 #define PRINT_LOOP 0			///< enable for thread loop prints
