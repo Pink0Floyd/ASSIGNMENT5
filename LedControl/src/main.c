@@ -11,15 +11,15 @@
 #include "schedule.h"
 
 #define PRINT_INIT 1			///< enable for thread initialisation prints
-#define PRINT_LOOP 0			///< enable for thread loop prints
+#define PRINT_LOOP 1			///< enable for thread loop prints
 
 #define PWM_PERIOD 1			///<< period for the PWM signal in microseconds
 
 #define SAMPLING_PERIOD 100000		///< sampling period in miliseconds
 #define BUTTOING_PERIOD 100000		///< buttons check period in miliseconds
-#define TIMING_PERIOD 600000		///< timing period in miliseconds
+#define TIMING_PERIOD 6000			///< timing period in miliseconds
 
-#define STATE_MACHINE_PERIOD 1000		///< state machine period in miliseconds
+#define STATE_MACHINE_PERIOD 300		///< state machine period in miliseconds
 #define INITIAL_STATE 1
 
 #define KP 6
@@ -36,22 +36,15 @@
 #define TIMING_PRIO 4			///< timing thread priority
 #define SCHEDULING_PRIO 1		///< scheduling thread priority
 
-#define SAMPLING_STACK_SIZE 512						///< sampling thread stack size
-K_THREAD_STACK_DEFINE(sampling_stack,SAMPLING_STACK_SIZE);		///< sampling thread stack size
-#define FILTERING_STACK_SIZE 512						///< filtering thread stack size
-K_THREAD_STACK_DEFINE(filtering_stack,FILTERING_STACK_SIZE);	///< filtering thread stack size
-#define CONTROLLING_STACK_SIZE 512						///< controlling thread stack size
-K_THREAD_STACK_DEFINE(controlling_stack,CONTROLLING_STACK_SIZE);	///< controlling thread stack size
-#define ACTUATING_STACK_SIZE 512						///< actuating thread stack size
-K_THREAD_STACK_DEFINE(actuating_stack,ACTUATING_STACK_SIZE);	///< actuating thread stack size
-#define BUTTOING_STACK_SIZE 512						///< buttoing thread stack size
-K_THREAD_STACK_DEFINE(buttoing_stack,BUTTOING_STACK_SIZE);		///< buttoing thread stack size
-#define UARTING_STACK_SIZE 512						///< uarting thread stack size
-K_THREAD_STACK_DEFINE(uarting_stack,UARTING_STACK_SIZE);		///< uarting thread stack size
-#define TIMING_STACK_SIZE 512							///< timing thread stack size
-K_THREAD_STACK_DEFINE(timing_stack,TIMING_STACK_SIZE);		///< timing thread stack size
-#define SCHEDULING_STACK_SIZE 512						///< timing thread stack size
-K_THREAD_STACK_DEFINE(scheduling_stack,SCHEDULING_STACK_SIZE);	///< timing thread stack size
+#define STACK_SIZE 2048							///< thread stack size
+K_THREAD_STACK_DEFINE(sampling_stack,STACK_SIZE);		///< sampling thread stack size
+K_THREAD_STACK_DEFINE(filtering_stack,STACK_SIZE);		///< filtering thread stack size
+K_THREAD_STACK_DEFINE(controlling_stack,STACK_SIZE);		///< controlling thread stack size
+K_THREAD_STACK_DEFINE(actuating_stack,STACK_SIZE);		///< actuating thread stack size
+K_THREAD_STACK_DEFINE(buttoing_stack,STACK_SIZE);		///< buttoing thread stack size
+K_THREAD_STACK_DEFINE(uarting_stack,STACK_SIZE);		///< uarting thread stack size
+K_THREAD_STACK_DEFINE(timing_stack,STACK_SIZE);			///< timing thread stack size
+K_THREAD_STACK_DEFINE(scheduling_stack,STACK_SIZE);		///< timing thread stack size
 
 struct k_thread sampling_data;	///< sampling thread initialisation
 k_tid_t sampling_tid;			///< sampling thread initialisation
@@ -86,7 +79,7 @@ uint8_t state=INITIAL_STATE;		///< state for the state machine
 void sampling(void* A,void* B,void* C)
 {
 	if(PRINT_INIT)
-	printk("Launched sampling thread\n");
+	printk("\tLaunched sampling thread\n");
 
 	int64_t curr_time=k_uptime_get();
 	int64_t end_time=k_uptime_get()+SAMPLING_PERIOD;
@@ -112,7 +105,7 @@ void sampling(void* A,void* B,void* C)
 void filtering(void* A,void* B,void* C)
 {
 	if(PRINT_INIT)
-	printk("Launched filtering thread\n");
+	printk("\tLaunched filtering thread\n");
 	while(1)
 	{
 		if(PRINT_LOOP)
@@ -134,7 +127,7 @@ void filtering(void* A,void* B,void* C)
 void controlling(void* A,void* B,void* C)
 {
 	if(PRINT_INIT)
-	printk("Launched controlling thread\n");
+	printk("\tLaunched controlling thread\n");
 
 	while(1)
 	{
@@ -157,7 +150,7 @@ void controlling(void* A,void* B,void* C)
 void actuating(void* A,void* B,void* C)
 {
 	if(PRINT_INIT)
-	printk("Launched actuating thread\n");
+	printk("\tLaunched actuating thread\n");
 
 	while(1)
 	{
@@ -176,7 +169,7 @@ void actuating(void* A,void* B,void* C)
 void buttoing(void* A,void* B,void* C)
 {
 	if(PRINT_INIT)
-	printk("Launched buttoing thread\n");
+	printk("\tLaunched buttoing thread\n");
 
 	int64_t curr_time=k_uptime_get();
 	int64_t end_time=k_uptime_get()+BUTTOING_PERIOD;
@@ -199,7 +192,7 @@ void buttoing(void* A,void* B,void* C)
 void uarting(void* A,void* B,void* C)
 {
 	if(PRINT_INIT)
-	printk("Launched uarting thread\n");
+	printk("\tLaunched uarting thread\n");
 
 	int i=0;
 	while(1)
@@ -216,7 +209,7 @@ void uarting(void* A,void* B,void* C)
 void timing(void* A,void* B,void* C)
 {
 	if(PRINT_INIT)
-	printk("Launched timing thread\n");
+	printk("\tLaunched timing thread\n");
 
 	int64_t curr_time=k_uptime_get();
 	int64_t end_time=k_uptime_get()+TIMING_PERIOD;
@@ -241,7 +234,7 @@ void timing(void* A,void* B,void* C)
 void scheduling(void* A,void* B,void* C)
 {
 	if(PRINT_INIT)
-	printk("Launched scheduling thread\n");
+	printk("\tLaunched scheduling thread\n");
 
 	while(1)
 	{
@@ -304,6 +297,7 @@ void main()
 	uart_init();
 	timer_init();
 	schedule_init();
+	printk("\n\n\n");
 
 	k_sem_init(&sem_samp,0,1);		// init sampling finished semafore
 	k_sem_init(&sem_filt,0,1);		// init filtering finished semafore
@@ -334,5 +328,5 @@ void main()
 	scheduling_tid=k_thread_create(&scheduling_data,scheduling_stack,K_THREAD_STACK_SIZEOF(scheduling_stack),		// create scheduling thread
 		scheduling,NULL,NULL,NULL,SCHEDULING_PRIO,0,K_NO_WAIT);									// create scheduling thread
 
-	state_machine();
+	//state_machine();
 }
