@@ -303,6 +303,7 @@ void main()
 	buttons_init_(15,'h');
 	uart_init();
 	timer_init();
+	schedule_init();
 
 	k_sem_init(&sem_samp,0,1);		// init sampling finished semafore
 	k_sem_init(&sem_filt,0,1);		// init filtering finished semafore

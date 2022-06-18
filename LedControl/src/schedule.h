@@ -6,7 +6,7 @@
 *
 * \author Filipe Loureiro & Miguel Silva
 * \date 18/06/22
-* \version 5.4
+* \version 5.5
 * \bug No bugs found
 */
 
@@ -29,6 +29,7 @@ time_data get_finish();
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Public Member Functions
 
+void schedule_init();
 void set_period();
 uint8_t check_light();
 
