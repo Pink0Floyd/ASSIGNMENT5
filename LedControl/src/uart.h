@@ -6,7 +6,7 @@
 * 
 * \author Filipe Loureiro & Miguel Silva
 * \date 18/06/22
-* \version 5.7
+* \version 5.8
 * \bug No bugs detected
 */
 
@@ -98,33 +98,13 @@ void put_ntab(uint8_t n);
 void put_str(char* str);
 
 /**
-*\brief UART string reception function
+*\brief UART integer reception function
 *
-* Receives a string through the UART
+* Receives an integer via UART
 *
-*\param [OUT] string received
+*\return integer received
 *\bug No bugs found
 */
-void get_str(char* str,char term);
-
-/**
-*\brief UART unsigned integer atomic transmission function
-*
-* Sends 4 bits as a hexadecimal character
-*
-*\param [IN] value to be transmitted
-*\bug No bugs found
-*/
-void put_uint4(uint8_t i);
-
-/**
-*\brief UART unsigned integer atomic reception function
-*
-* Receives 4 bits as a hexadecimal character
-*
-*\return value received
-*\bug No bugs found
-*/
-uint8_t get_uint4();
+int get_int();
 
 #endif

@@ -16,7 +16,7 @@
 
 #include "base.h"
 
-#define STR_MAX_LEN 32000	// must be less than 256*256/2-1 because its int16 max value
+#define STR_MAX_LEN 1000
 
 /**
 *\brief String initialisation function
