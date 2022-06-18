@@ -14,8 +14,8 @@
 
 #define PWM_PERIOD 1			///<< period for the PWM signal in microseconds
 
-#define SAMPLING_PERIOD 1000		///< sampling period in miliseconds
-#define BUTTOING_PERIOD 12000		///< buttons check period in miliseconds
+#define SAMPLING_PERIOD 100000		///< sampling period in miliseconds
+#define BUTTOING_PERIOD 100000		///< buttons check period in miliseconds
 #define TIMING_PERIOD 600000		///< timing period in miliseconds
 
 #define KP 6
@@ -84,8 +84,6 @@ void sampling(void* A,void* B,void* C)
 	while(1)
 	{
 		filt_in=adc_sample();					// sample
-		if(!PRINT_LOOP)
-		printk("%u ",filt_in); 
 		if(PRINT_LOOP)
 		printk("\nsampling: sampled %u\n",filt_in);
 
@@ -115,8 +113,6 @@ void filtering(void* A,void* B,void* C)
 		printk("filtering: sampling finished\n");
 
 		contr_in=filter(filt_in);								// filter
-		if(!PRINT_LOOP)
-		printk("-> %u ",contr_in);
 		if(PRINT_LOOP)
 		printk("filtering: filtered %u to %u\n",filt_in,contr_in);
 
@@ -140,8 +136,6 @@ void controlling(void* A,void* B,void* C)
 		printk("controlling: filtering finished\n");
 
 		act_in=controller(contr_in,target);							// control
-		if(!PRINT_LOOP)
-		printk("-> %u ",act_in);
 		if(PRINT_LOOP)
 		printk("controlling: controlled %u to %u\n",contr_in,act_in);
 
@@ -165,8 +159,6 @@ void actuating(void* A,void* B,void* C)
 		printk("actuating: got a filtered sample from filtering\n");
 
 		pwm_led_set(act_in);									// act
-		if(!PRINT_LOOP)
-		printk("\n");
 		if(PRINT_LOOP)
 		printk("actuating: led has been set to %u %%\n",act_in);
 	}
@@ -185,8 +177,6 @@ void buttoing(void* A,void* B,void* C)
 
 		if(PRINT_LOOP)
 		printk("buttoing: %u read from buttons\n",button_flag);
-		if(!PRINT_LOOP)
-		printk("%u %u %u %u\n",button_flag/8,(button_flag%8/4),(button_flag%4)/2,button_flag%2);
 
 		curr_time=k_uptime_get();				// sleep until next sampling period
 		if(curr_time<end_time)					// sleep until next sampling period
