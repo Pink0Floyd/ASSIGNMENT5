@@ -202,12 +202,15 @@ void uarting(void* A,void* B,void* C)
 	if(PRINT_INIT)
 	printk("Launched uarting thread\n");
 
-	char str[144]={};
+	int i=0;
 	while(1)
 	{
-		get_str(str,'\n');
-		if(PRINT_LOOP)
-		printk("uarting: Received string: %s\n",str);
+		if(state==2)
+		{
+			get_int();
+			if(PRINT_LOOP)
+			printk("uarting: Received int %i\n",i);
+		}
 	}
 }
 
@@ -240,11 +243,17 @@ void state_machine()
 		switch(state)
 		{
 			case 1:							// start of state 1 (manual state)
-				
+				if(button_flag==2)				// next state condition
+				{							// next state condition
+					state=2;					// next state condition
+				}							// next state condition
 				break;						// end of state 1 (manual state)
 
 			case 2:							// start of state 2 (automatic state)
-				
+				if(button_flag==1)				// next state condition
+				{							// next state condition
+					state=1;					// next state condition
+				}							// next state condition
 				break;						// end of state 2 (automatic state)
 		}
 		
