@@ -9,7 +9,7 @@ static filter_buffer buffer;
 float read_avg()
 {
 	float avg=buffer.samples_avg;		// return last calculated average
-	return (avg-MIN_SAMPLE_VALUE)*(MAX_FILTER_VALUE-MIN_FILTER_VALUE)/(MAX_SAMPLE_VALUE-MIN_SAMPLE_VALUE);
+	return (MAX_SAMPLE_VALUE-avg)*(MAX_FILTER_VALUE-MIN_FILTER_VALUE)/(MAX_SAMPLE_VALUE-MIN_SAMPLE_VALUE);
 }
 
 void insert_sample(uint16_t sample)

@@ -5,8 +5,8 @@
 * This module contains functions to implement the smart filter required
 *
 * \author Filipe Loureiro & Miguel Silva
-* \date 13/06/22
-* \version 5.5
+* \date 18/06/22
+* \version 5.6
 * \bug No bugs found
 */
 
@@ -15,8 +15,8 @@
 
 #include "base.h"
 
-#define MIN_SAMPLE_VALUE 22			///< minimum sample value
-#define MAX_SAMPLE_VALUE 1023			///< maximum sample value
+#define MIN_SAMPLE_VALUE 360			///< minimum sample value
+#define MAX_SAMPLE_VALUE 1020			///< maximum sample value
 
 #define FILTER_BUFFER_SIZE 13			///< number of samples in each average plus the excluded old sample
 #define MIN_FILTER_VALUE 0			///< minimum filter value
