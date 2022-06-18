@@ -9,14 +9,14 @@
 #include "uart.h"
 #include "timer.h"
 
-#define PRINT_INIT 1		///< enable for thread initialisation prints
-#define PRINT_LOOP 1		///< enable for thread loop prints
+#define PRINT_INIT 1			///< enable for thread initialisation prints
+#define PRINT_LOOP 0			///< enable for thread loop prints
 
-#define PWM_PERIOD 1		///<< period for the PWM signal in microseconds
+#define PWM_PERIOD 1			///<< period for the PWM signal in microseconds
 
 #define SAMPLING_PERIOD 1000		///< sampling period in miliseconds
-#define BUTTOING_PERIOD 5000		///< buttons check period in miliseconds
-#define TIMING_PERIOD 6000		///< timing period in miliseconds
+#define BUTTOING_PERIOD 12000		///< buttons check period in miliseconds
+#define TIMING_PERIOD 600000		///< timing period in miliseconds
 
 #define SAMPLING_PRIO 2			///< sampling thread priority
 #define FILTERING_PRIO 1		///< filtering thread priority
@@ -80,7 +80,7 @@ void sampling(void* A,void* B,void* C)
 		if(!PRINT_LOOP)
 		printk("%u ",filt_in); 
 		if(PRINT_LOOP)
-		printk("sampling: sampled %u\n",filt_in);
+		printk("\nsampling: sampled %u\n",filt_in);
 
 		k_sem_give(&sem_samp);				// wake up filtering
 		if(PRINT_LOOP)
@@ -179,6 +179,8 @@ void buttoing(void* A,void* B,void* C)
 
 		if(PRINT_LOOP)
 		printk("buttoing: %u read from buttons\n",button_flag);
+		if(!PRINT_LOOP)
+		printk("%u %u %u %u\n",button_flag/8,(button_flag%8/4),(button_flag%4)/2,button_flag%2);
 
 		curr_time=k_uptime_get();				// sleep until next sampling period
 		if(curr_time<end_time)					// sleep until next sampling period
@@ -194,13 +196,13 @@ void uarting(void* A,void* B,void* C)
 	if(PRINT_INIT)
 	printk("Launched uarting thread\n");
 
-	char str[144]={};
+	char str[144]={};/*
 	while(1)
 	{
 		get_str(str,'\n');
 		if(PRINT_LOOP)
 		printk("uarting: Received string: %s\n",str);
-	}
+	}*/
 }
 
 void timing(void* A,void* B,void* C)

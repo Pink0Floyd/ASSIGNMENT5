@@ -14,7 +14,7 @@
 
 #include "base.h"
 
-#define PRINT_GPIB_DEBUG 1							// For debug prints
+#define PRINT_GPIB_DEBUG 0							// For debug prints
 
 #define GPIO0_NID DT_NODELABEL(gpio0)                       // Get the gpio0 identifier from the device tree
 #define GPIO1_NID DT_NODELABEL(gpio1)                       // Get the gpio0 identifier from the device tree
