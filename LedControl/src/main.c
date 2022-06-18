@@ -68,7 +68,7 @@ k_tid_t uarting_tid;			///< uarting thread initialisation
 struct k_thread timing_data;		///< timing thread initialisation
 k_tid_t timing_tid;			///< timing thread initialisation
 struct k_thread scheduling_data;	///< scheduling thread initialisation
-k_tid_t scheduling_data;		///< scheduling thread initialisation
+k_tid_t scheduling_tid;			///< scheduling thread initialisation
 
 struct k_sem sem_samp;			///< sampling finished semafore
 struct k_sem sem_filt;			///< filtering finished semafore
@@ -79,10 +79,9 @@ uint16_t filt_in;				///< shared memory between sampling and filtering
 uint16_t contr_in;			///< shared memory between filtering and controlling
 uint16_t act_in;				///< shared memory between controlling and actuating
 uint8_t button_flag;			///< shared memory between buttoing and the state machine
+uint8_t target=50;			///< shared memory between scheduling and controlling
 
 uint8_t state=INITIAL_STATE;		///< state for the state machine    
-
-float target=50;
 
 void sampling(void* A,void* B,void* C)
 {
@@ -170,7 +169,7 @@ void actuating(void* A,void* B,void* C)
 
 		pwm_led_set(act_in);									// act
 		if(PRINT_LOOP)
-		printk("actuating: led has been set to %u %%\n",act_in);
+		printk("actuating: pwm has been set to %u %%\n",act_in);
 	}
 }
 
@@ -252,8 +251,9 @@ void scheduling(void* A,void* B,void* C)
 		if(PRINT_LOOP)
 		printk("scheduling: timing has finished\n");
 
-
-
+		target=check_light();
+		if(PRINT_LOOP)
+		printk("scheduling: this period's light is %u\n",target);
 	}
 }
 

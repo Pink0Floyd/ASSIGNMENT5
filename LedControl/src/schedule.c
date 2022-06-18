@@ -50,12 +50,12 @@ void set_period()
 	set_interval(n,s,f);
 }
 
-uint8_t get_light()
+uint8_t check_light()
 {
 	uint8_t r=check_interval();
 	if(r!=N_INTERVAL)
 	{
-		r=li[r];
+		r=light_intensity[r];
 	}
 	else
 	{

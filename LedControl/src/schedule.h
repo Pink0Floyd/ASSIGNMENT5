@@ -6,7 +6,7 @@
 *
 * \author Filipe Loureiro & Miguel Silva
 * \date 18/06/22
-* \version 5.3
+* \version 5.4
 * \bug No bugs found
 */
 
@@ -30,5 +30,6 @@ time_data get_finish();
 // Public Member Functions
 
 void set_period();
+uint8_t check_light();
 
 #endif
