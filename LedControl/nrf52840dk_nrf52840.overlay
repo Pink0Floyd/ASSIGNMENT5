@@ -1,5 +1,5 @@
 &pwm0 {
-	ch0-pin = < 0x13 >;
+	ch0-pin = < 0xd >;
 };
 
 
