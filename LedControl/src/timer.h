@@ -6,8 +6,8 @@
 *
 * \author Filipe Loureiro & Miguel Silva
 * \date 18/06/22
-* \version 5.7
-* \bug Remains untested
+* \version 5.9
+* \bug No bugs found
 */
 
 #ifndef _TIMER_H
@@ -20,6 +20,7 @@
 #define N_INTERVAL ((WEEK_DURATION+1)*2)
 
 #include "base.h"
+#include "uart.h"
 
 typedef struct time_data
 {
@@ -51,5 +52,10 @@ void update_time_day(uint16_t day);
 void set_time(time_data t);
 void set_interval(uint8_t n,time_data s,time_data f);
 uint8_t check_interval();
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void print_time(time_data t);
+time_data scan_time();
 
 #endif

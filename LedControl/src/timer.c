@@ -125,3 +125,19 @@ uint8_t check_interval()
 	}
 	return k;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void print_time(time_data t)
+{
+	printk("Day: %u\tHour: %u\tMin: %u\n",t.day,t.hour,t.min);
+}
+
+time_data scan_time()
+{
+	time_data t;
+	put_str("Day: ");t.day=(uint16_t)get_int();
+	put_str("Hour: ");t.hour=(uint16_t)get_int();
+	put_str("Min: ");t.min=(uint16_t)get_int();
+	return t;
+}

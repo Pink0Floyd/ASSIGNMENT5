@@ -6,7 +6,7 @@
 * \author Filipe Loureiro e Miguel Silva
 * \date 18/06/22
 * \version 5.4
-* \bug No bugs detected
+* \bug No bugs found
 */
 
 #ifndef _GPIO_H
