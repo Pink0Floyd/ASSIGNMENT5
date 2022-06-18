@@ -31,6 +31,17 @@ time_data get_finish()
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Public Member Functions
 
+void schedule_init()
+{
+	uint8_t k=0;
+	while(k<N_INTERVAL)
+	{
+		light_intensity[k]=0;
+		k++;
+	}
+	printk("\tInitialised timer module\n");
+}
+
 void set_period()
 {
 	uint8_t n=get_li();
