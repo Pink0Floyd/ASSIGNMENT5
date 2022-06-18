@@ -4,11 +4,15 @@
 void uart_init()
 {
       console_init();
+	printk("\tInitialised uart module\n");
 }
 
 char get_char()
 {
-      return console_getchar();
+	char c=console_getchar();
+	if(ECO_EN)
+	put_char(c);
+	return c;
 }
 
 void put_char(char c)
