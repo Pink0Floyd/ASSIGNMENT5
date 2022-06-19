@@ -16,10 +16,11 @@
 #define PWM_PERIOD 1			///<< period for the PWM signal in microseconds
 
 #define SAMPLING_PERIOD 100000		///< sampling period in miliseconds
-#define BUTTOING_PERIOD 100000		///< buttons check period in miliseconds
-#define TIMING_PERIOD 6000			///< timing period in miliseconds
+#define BUTTOING_PERIOD 6000			///< buttons check period in miliseconds
+#define TIMING_PERIOD 60000			///< timing period in miliseconds
 
-#define INITIAL_STATE 2				///< state machine initial state
+#define MIN_PER_PERIOD 1			///< minutes to be counted per period
+#define INITIAL_STATE 1				///< state machine initial state
 
 #define KP 6.0				///< controller proportional coeficient
 #define KI 2.0				///< controller intergral coeficient
@@ -143,7 +144,7 @@ void controlling(void* A,void* B,void* C)
 
 		act_in=controller(contr_in,target);							// control
 		if(PRINT_LOOP)
-		printk("controlling: controlled %u to %u\n",contr_in,act_in);
+		printk("controlling: controlled %u to %u attempting to get %u\n",contr_in,act_in,target);
 
 		k_sem_give(&sem_contr);									// wake up actuating
 		if(PRINT_LOOP)
@@ -181,7 +182,7 @@ void buttoing(void* A,void* B,void* C)
 	{
 		button_flag=read_buttons(4)*8+read_buttons(3)*4+read_buttons(2)*2+read_buttons(1)*1;		// read buttons
 		if(PRINT_LOOP)
-		printk("buttoing: %u read from buttons\n",button_flag);
+		printk("\nbuttoing: %u read from buttons\n",button_flag);
 
 		k_sem_give(&sem_but);
 		if(PRINT_LOOP)
@@ -210,22 +211,33 @@ void machining()
 		printk("machining: entering state %u\n",state);
 		switch(state)
 		{
-			case 1:							// start of state 1 (manual state)
+			case 1:						// start of state 1 (manual state)
+				if(button_flag==4&&target>MIN_LIGHT)	// state action
+				{							// state action
+					target--;					// state action
+					printk("machining: light decreased\n");
+				}							// state action
+				else if(button_flag==8&&target<MAX_LIGHT)	// state action
+				{							// state action
+					target++;					// state action
+					printk("machining: light increased\n");
+				}							// state action
+
 				if(button_flag==2)				// next state condition
 				{							// next state condition
 					state=2;					// next state condition
 				}							// next state condition
-				break;						// end of state 1 (manual state)
+				break;					// end of state 1 (manual state)
 
-			case 2:							// start of state 2 (automatic state)
+			case 2:						// start of state 2 (automatic state)
 				if(button_flag==1)				// next state condition
 				{							// next state condition
 					state=1;					// next state condition
 				}							// next state condition
-				break;						// end of state 2 (automatic state)
+				break;					// end of state 2 (automatic state)
 		}
 		if(PRINT_LOOP)
-		printk("machining: exiting to state %u",state);
+		printk("machining: exiting to state %u\n",state);
 
 		k_sem_give(&sem_mach);
 		if(PRINT_LOOP)
@@ -267,9 +279,9 @@ void timing(void* A,void* B,void* C)
 	int64_t end_time=k_uptime_get()+TIMING_PERIOD;
 	while(1)
 	{
-		update_time(1);						// advance a minute
+		update_time(MIN_PER_PERIOD);				// advance current time
 		if(PRINT_LOOP)
-		printk("timing: a minute has passed\n");
+		printk("\ntiming: a minute has passed\n");
 		if(PRINT_LOOP)
 		print_time(read_time_curr());
 		k_sem_give(&sem_tim);
