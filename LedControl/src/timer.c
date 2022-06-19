@@ -142,7 +142,7 @@ time_data read_time_curr()
 
 void print_time(time_data t)
 {
-	printk("Day: %u\tHour: %u\tMin: %u\n",t.day,t.hour,t.min);
+	printk("%u:%u:%u",t.day,t.hour,t.min);
 }
 
 time_data scan_time()
@@ -158,5 +158,7 @@ time_data scan_time()
 void print_interval(uint8_t n)
 {
 	n=saturation(n,0,N_INTERVAL-1);
-	print_time(time_interval[n]);
+	print_time(time_interval[n].start);
+	printk(" - ");
+	print_time(time_interval[n].finish);
 }

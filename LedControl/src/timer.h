@@ -6,7 +6,7 @@
 *
 * \author Filipe Loureiro & Miguel Silva
 * \date 19/06/22
-* \version 5.13
+* \version 5.14
 * \bug No bugs found
 */
 
@@ -58,5 +58,6 @@ uint8_t check_interval();
 time_data read_time_curr();
 void print_time(time_data t);
 time_data scan_time();
+void print_interval(uint8_t n);
 
 #endif
