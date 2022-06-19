@@ -319,6 +319,8 @@ void main()
 	k_sem_init(&sem_samp,0,1);		// init sampling finished semafore
 	k_sem_init(&sem_filt,0,1);		// init filtering finished semafore
 	k_sem_init(&sem_contr,0,1);		// init controlling finished semafore
+	k_sem_init(&sem_but,0,1);		// init buttoing finished semafore
+	k_sem_init(&sem_mach,0,1);		// init machining finished semafore
 	k_sem_init(&sem_tim,0,1);		// init timing finished semafore
 
 	sampling_tid=k_thread_create(&sampling_data,sampling_stack,K_THREAD_STACK_SIZEOF(sampling_stack),			// create sampling thread
