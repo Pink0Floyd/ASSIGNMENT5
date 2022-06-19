@@ -62,6 +62,8 @@ void timer_init()
 		time_interval[k].finish=time_curr;
 		k++;
 	}
+	printk("Insert Initial Time:\n");
+	set_time(scan_time());
 
 	printk("\tInitialised timer module\n");
 }
@@ -147,9 +149,9 @@ void print_time(time_data t)
 time_data scan_time()
 {
 	time_data t;
-	put_str("Day: ");t.day=(uint16_t)get_int();
-	put_str("Hour: ");t.hour=(uint16_t)get_int();
-	put_str("Min: ");t.min=(uint16_t)get_int();
+	put_str("Day: ");t.day=(uint16_t)get_int();put_eol();
+	put_str("Hour: ");t.hour=(uint16_t)get_int();put_eol();
+	put_str("Min: ");t.min=(uint16_t)get_int();put_eol();
 	t=format_time(t);
 	return t;
 }
