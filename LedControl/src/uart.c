@@ -25,6 +25,7 @@ char get_char()
 void get_dummy()
 {
 	char dummy=get_char();
+	dummy=0;
 }
 
 void put_char(char c)

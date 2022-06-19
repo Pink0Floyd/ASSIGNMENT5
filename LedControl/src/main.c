@@ -33,7 +33,6 @@
 #define ACTUATING_PRIO 1		///< actuating thread priority
 #define BUTTONING_PRIO 2		///< buttoing thread priority
 #define MACHINING_PRIO 2		///< machining thread priority
-#define UARTING_PRIO 2			///< uarting thread priority
 #define TIMING_PRIO 4			///< timing thread priority
 #define SCHEDULING_PRIO 1		///< scheduling thread priority
 
@@ -44,7 +43,6 @@ K_THREAD_STACK_DEFINE(controlling_stack,STACK_SIZE);		///< controlling thread st
 K_THREAD_STACK_DEFINE(actuating_stack,STACK_SIZE);		///< actuating thread stack size
 K_THREAD_STACK_DEFINE(buttoing_stack,STACK_SIZE);		///< buttoing thread stack size
 K_THREAD_STACK_DEFINE(machining_stack,STACK_SIZE);		///< machining thread stack size
-K_THREAD_STACK_DEFINE(uarting_stack,STACK_SIZE);		///< uarting thread stack size
 K_THREAD_STACK_DEFINE(timing_stack,STACK_SIZE);			///< timing thread stack size
 K_THREAD_STACK_DEFINE(scheduling_stack,STACK_SIZE);		///< timing thread stack size
 
@@ -60,8 +58,6 @@ struct k_thread buttoing_data;	///< buttoing thread initialisation
 k_tid_t buttoing_tid;			///< buttoing thread initialisation
 struct k_thread machining_data;	///< machining thread initialisation
 k_tid_t machining_tid;			///< machining thread initialisation
-struct k_thread uarting_data;		///< uarting thread initialisation
-k_tid_t uarting_tid;			///< uarting thread initialisation
 struct k_thread timing_data;		///< timing thread initialisation
 k_tid_t timing_tid;			///< timing thread initialisation
 struct k_thread scheduling_data;	///< scheduling thread initialisation
@@ -72,7 +68,6 @@ struct k_sem sem_filt;			///< filtering finished semafore
 struct k_sem sem_contr;			///< controlling finished semafore
 struct k_sem sem_but;			///< buttoing finished semafore
 struct k_sem sem_tim;			///< timing finished semafore
-struct k_sem sem_lockedstate;		///< lockedstate semafore
 
 uint16_t filt_in=0;			///< shared memory between sampling and filtering
 uint16_t contr_in=0;			///< shared memory between filtering and controlling
@@ -197,7 +192,7 @@ void buttoing(void* A,void* B,void* C)
 	}
 }
 
-void machining()	
+void machining()
 {	
 	while(state==1||state==2)
 	{
@@ -206,12 +201,6 @@ void machining()
 		k_sem_take(&sem_but,K_FOREVER);
 		if(PRINT_LOOP)
 		printk("machining: buttoing has finished\n");
-
-		if(PRINT_LOOP)
-		printk("machining: waiting for state to be unlocked\n");
-		k_sem_take(&sem_lockedstate,K_FOREVER);
-		if(PRINT_LOOP)
-		printk("machining: state has been unlocked\n");
 
 		if(PRINT_LOOP)
 		printk("machining: entering state %u\n",state);
@@ -240,6 +229,10 @@ void machining()
 				break;					// end of state 1 (manual state)
 
 			case 2:						// start of state 2 (automatic state)
+				uart_eco(1);					// state action
+				set_period();					// state action
+				uart_eco(0);					// state action
+
 				if(button_flag==1)				// next state condition
 				{							// next state condition
 					state=1;					// next state condition
@@ -250,50 +243,9 @@ void machining()
 		}
 		if(PRINT_LOOP)
 		printk("machining: exiting to state %u\n",state);
-
-		k_sem_give(&sem_lockedstate);
-		if(PRINT_LOOP)
-		printk("machining: allowing state to be locked\n");
 	}
 	if(PRINT_LOOP)
 	printk("machining: unknown state\n");
-}
-
-void uarting(void* A,void* B,void* C)
-{
-	if(PRINT_INIT)
-	printk("\tLaunched uarting thread\n");
-
-	while(1)
-	{
-		if(state==1)
-		{
-			if(PRINT_LOOP)
-			printk("uarting: in state1 eco is disabled and uart is ignored\n");
-			uart_eco(0);
-			get_dummy();
-		}
-		else if(state==2)
-		{
-			if(PRINT_LOOP)
-			printk("uarting: in state2 eco is enabled and a period is read\n");
-			uart_eco(1);
-			
-			if(PRINT_LOOP)
-			printk("uarting: waiting for state to be locked\n");
-			k_sem_take(&sem_lockedstate,K_FOREVER);
-			if(PRINT_LOOP)
-			printk("uarting: state has been locked\n");
-
-			set_period();
-			uart_eco(0);
-			get_dummy();
-
-			k_sem_give(&sem_lockedstate);
-			if(PRINT_LOOP)
-			printk("uarting: allowing state to be unlocked\n");
-		}
-	}
 }
 
 void timing(void* A,void* B,void* C)
@@ -358,14 +310,13 @@ void main()
 	schedule_init();
 	printk("\n\n\n");
 
-	uart_eco(INITIAL_STATE-1);
+	uart_eco(0);
 
 	k_sem_init(&sem_samp,0,1);		// init sampling finished semafore
 	k_sem_init(&sem_filt,0,1);		// init filtering finished semafore
 	k_sem_init(&sem_contr,0,1);		// init controlling finished semafore
 	k_sem_init(&sem_but,0,1);		// init buttoing finished semafore
 	k_sem_init(&sem_tim,0,1);		// init timing finished semafore
-	k_sem_init(&sem_lockedstate,1,1);	// init lockedtate semafore
 
 	sampling_tid=k_thread_create(&sampling_data,sampling_stack,K_THREAD_STACK_SIZEOF(sampling_stack),			// create sampling thread
 		sampling,NULL,NULL,NULL,SAMPLING_PRIO,0,K_NO_WAIT);										// create sampling thread
@@ -384,9 +335,6 @@ void main()
 
 	machining_tid=k_thread_create(&machining_data,machining_stack,K_THREAD_STACK_SIZEOF(machining_stack),			// create machining thread
 		machining,NULL,NULL,NULL,MACHINING_PRIO,0,K_NO_WAIT);										// create machining thread
-	
-	uarting_tid=k_thread_create(&uarting_data,uarting_stack,K_THREAD_STACK_SIZEOF(uarting_stack),				// create uarting thread
-		uarting,NULL,NULL,NULL,UARTING_PRIO,0,K_NO_WAIT);										// create uarting thread
 	
 	timing_tid=k_thread_create(&timing_data,timing_stack,K_THREAD_STACK_SIZEOF(timing_stack),					// create timing thread
 		timing,NULL,NULL,NULL,TIMING_PRIO,0,K_NO_WAIT);											// create timing thread
