@@ -197,7 +197,7 @@ void buttoing(void* A,void* B,void* C)
 	}
 }
 
-void machining()
+void machining()	
 {	
 	while(state==1||state==2)
 	{
