@@ -270,6 +270,8 @@ void timing(void* A,void* B,void* C)
 		update_time(1);						// advance a minute
 		if(PRINT_LOOP)
 		printk("timing: a minute has passed\n");
+		if(PRINT_LOOP)
+		print_time(read_time_curr());
 		k_sem_give(&sem_tim);
 		if(PRINT_LOOP)
 		printk("timing: finished timing\n");

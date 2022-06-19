@@ -5,6 +5,15 @@
 static const struct device *adc_dev = NULL;
 static uint16_t adc_sample_buffer;
 
+// ADC channel struct Configuration:
+static struct adc_channel_cfg adc_conf = {
+	.gain = ADC_GAIN,
+	.reference = ADC_REFERENCE,
+	.acquisition_time = ADC_ACQUISITION_TIME,
+	.channel_id = ADC_CHANNEL_ID,
+	.input_positive = ADC_CHANNEL_INPUT
+};
+
 void adc_init()
 {
       int err=0;
@@ -15,8 +24,9 @@ void adc_init()
       {
 	    printk("\tADC device_get_binding() failed\n");
       } 
-
-      err = adc_channel_setup(adc_dev, &adc_conf);
+	
+	struct adc_channel_cfg* padc_conf=&adc_conf;
+      err = adc_channel_setup(adc_dev,padc_conf);
       if (err) 
       {
 	    printk("\tadc_channel_setup() failed with error code %d\n", err);

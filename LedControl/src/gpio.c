@@ -1,10 +1,10 @@
 
 #include "gpio.h"
 
-static struct device *gpio0_dev;						    // Pointer to GPIO device structure
+const static struct device *gpio0_dev;						    // Pointer to GPIO device structure
 static int gpio0_state=0;							    // The inicialization of the GPIO 0 struct is indicated by this variable
 
-static struct device *gpio1_dev;						    // Pointer to GPIO device structure
+const static struct device *gpio1_dev;						    // Pointer to GPIO device structure
 static int gpio1_state=0;							    // The initialization of the GPIO 1 struct is indicated by this variable    
 	    
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -12,7 +12,6 @@ static int gpio1_state=0;							    // The initialization of the GPIO 1 struct i
 void gpio0_bind()
 {
       gpio0_dev=device_get_binding(GPIO0_LABEL);				    // Bind the struct       
-         
 
       if(PRINT_GPIB_DEBUG)
       {
@@ -53,6 +52,7 @@ void gpio1_bind()
 
 struct device *gpio0_init()
 {
+	struct device* r;
       if(gpio0_state==0)
       {
 	    gpio0_bind();
@@ -60,7 +60,7 @@ struct device *gpio0_init()
 	    {
 		  printk("GPIO 0 initialised for the first time\n\r");
 	    }
-	    return gpio0_dev;
+	    r=(struct device*)gpio0_dev;
       }
       else
       {
@@ -68,8 +68,9 @@ struct device *gpio0_init()
 	    {
 		  printk("GPIO 1 already Initialised\n\r");
 	    }
-	    return gpio0_dev;
+	    r=(struct device*)gpio0_dev;
       }
+	return r;
 }
 
 
@@ -80,6 +81,7 @@ struct device *gpio0_init()
 
 struct device *gpio1_init()
 {
+	struct device* r;
       if(gpio1_state==0)
       {
 	    gpio1_bind();
@@ -87,7 +89,7 @@ struct device *gpio1_init()
 	    {
 		  printk("GPIO 1 initialised for the first time\n\r");
 	    }
-	    return gpio1_dev;
+	    r=(struct device*)gpio1_dev;
       }
       else
       {
@@ -95,8 +97,7 @@ struct device *gpio1_init()
 	    {
 		  printk("GPIO 1 already Initialised\n\r");
 	    }
-	    return gpio1_dev;
+	    r=(struct device*)gpio1_dev;
       }
-
-      
+	return r;
 }

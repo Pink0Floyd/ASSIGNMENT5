@@ -5,8 +5,8 @@
 * This module contains functions to implement an AD converter
 *
 * \author Filipe Loureiro & Miguel Silva
-* \date 13/06/22
-* \version 5.1
+* \date 19/06/22
+* \version 5.2
 * \bug No bugs detected
 */
 
@@ -27,15 +27,6 @@
 #define ADC_ACQUISITION_TIME ADC_ACQ_TIME(ADC_ACQ_TIME_MICROSECONDS, 40)
 #define ADC_CHANNEL_ID 1
 #define ADC_CHANNEL_INPUT NRF_SAADC_INPUT_AIN1 
-
-// ADC channel struct Configuration:
-static struct adc_channel_cfg adc_conf = {
-	.gain = ADC_GAIN,
-	.reference = ADC_REFERENCE,
-	.acquisition_time = ADC_ACQUISITION_TIME,
-	.channel_id = ADC_CHANNEL_ID,
-	.input_positive = ADC_CHANNEL_INPUT
-};
 
 ///////////////////////////////////////////////////////////////////////////////////////
 //  Public Functions:
