@@ -2,7 +2,6 @@
 #include "timer.h"
 
 time_data time_curr;
-
 time_interval_data time_interval[N_INTERVAL];
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -154,4 +153,10 @@ time_data scan_time()
 	put_str("Min: ");t.min=(uint16_t)get_int();put_eol();
 	t=format_time(t);
 	return t;
+}
+
+void print_interval(uint8_t n)
+{
+	n=saturation(n,0,N_INTERVAL-1);
+	print_time(time_interval[n]);
 }
