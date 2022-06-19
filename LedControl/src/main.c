@@ -310,7 +310,7 @@ void scheduling(void* A,void* B,void* C)
 		if(PRINT_LOOP)
 		printk("scheduling: timing has finished\n");
 
-		target=check_light();
+		target=check_light(target);
 		if(PRINT_LOOP)
 		printk("scheduling: this period's light is %u\n",target);
 	}
