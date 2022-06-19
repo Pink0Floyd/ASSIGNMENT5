@@ -1,29 +1,30 @@
 
 #include "timer.h"
 
-time_data time;
+time_data time_curr;
 
 time_interval_data time_interval[N_INTERVAL];
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Private Member Functions
 
-void format_time()
+time_data format_time(time_data t)
 {
-	while(time.min>=HOUR_DURATION)
+	while(t.min>=HOUR_DURATION)
 	{
-		time.min-=HOUR_DURATION;
-		time.hour++;
+		t.min-=HOUR_DURATION;
+		t.hour++;
 	}
-	while(time.hour>=DAY_DURATION)
+	while(t.hour>=DAY_DURATION)
 	{
-		time.hour-=DAY_DURATION;
-		time.day++;
+		t.hour-=DAY_DURATION;
+		t.day++;
 	}
-	while(time.day>=WEEK_DURATION)
+	while(t.day>=WEEK_DURATION)
 	{
-		time.day-=WEEK_DURATION;
+		t.day-=WEEK_DURATION;
 	}
+	return t;
 }
 
 int8_t compare_time(time_data t1,time_data t2)
@@ -50,15 +51,15 @@ int8_t compare_time(time_data t1,time_data t2)
 
 void timer_init()
 {
-	time.min=0;
-	time.hour=0;
-	time.day=0;
+	time_curr.min=0;
+	time_curr.hour=0;
+	time_curr.day=0;
 
 	uint8_t k=0;
 	while(k<N_INTERVAL)
 	{
-		time_interval[k].start=time;
-		time_interval[k].finish=time;
+		time_interval[k].start=time_curr;
+		time_interval[k].finish=time_curr;
 		k++;
 	}
 
@@ -72,31 +73,33 @@ void update_time(uint8_t min)
 
 void update_time_min(uint16_t min)
 {
-	time.min+=min;
-	format_time();
+	time_curr.min+=min;
+	time_curr=format_time(time_curr);
 }
 
 void update_time_hour(uint16_t hour)
 {
-	time.hour+=hour;
-	format_time();
+	time_curr.hour+=hour;
+	time_curr=format_time(time_curr);
 }
 
 void update_time_day(uint16_t day)
 {
-	time.day+=day;
-	format_time();
+	time_curr.day+=day;
+	time_curr=format_time(time_curr);
 }
 
 void set_time(time_data t)
 {
-	time=t;
-	format_time();
+	time_curr=t;
+	time_curr=format_time(time_curr);
 }
 
 void set_interval(uint8_t n,time_data s,time_data f)
 {
 	n=saturation(n,0,N_INTERVAL-1);
+	s=format_time(s);f=format_time(f);
+
 	int16_t i=compare_time(s,f);
 	if(i==1)
 	{
@@ -116,9 +119,9 @@ uint8_t check_interval()
 	uint8_t k=0;
 	while(k<N_INTERVAL)
 	{
-		if(compare_time(time,time_interval[k].start)==-1)
+		if(compare_time(time_curr,time_interval[k].start)==-1)
 		{
-			if(compare_time(time,time_interval[k].finish)==1)
+			if(compare_time(time_curr,time_interval[k].finish)==1)
 			{
 				r=k;
 				break;
@@ -131,6 +134,11 @@ uint8_t check_interval()
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+time_data read_time_curr()
+{
+	return time_curr;
+}
+
 void print_time(time_data t)
 {
 	printk("Day: %u\tHour: %u\tMin: %u\n",t.day,t.hour,t.min);
@@ -142,5 +150,6 @@ time_data scan_time()
 	put_str("Day: ");t.day=(uint16_t)get_int();
 	put_str("Hour: ");t.hour=(uint16_t)get_int();
 	put_str("Min: ");t.min=(uint16_t)get_int();
+	t=format_time(t);
 	return t;
 }
