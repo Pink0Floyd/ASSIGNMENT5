@@ -22,6 +22,11 @@ char get_char()
 	return c;
 }
 
+void get_dummy()
+{
+	char dummy=get_char();
+}
+
 void put_char(char c)
 {
       console_putchar(c);

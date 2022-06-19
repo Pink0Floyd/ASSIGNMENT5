@@ -6,7 +6,7 @@
 * 
 * \author Filipe Loureiro & Miguel Silva
 * \date 19/06/22
-* \version 5.9
+* \version 5.10
 * \bug No bugs detected
 */
 
@@ -41,12 +41,21 @@ void uart_eco(uint8_t f);
 /**
 *\brief UART character reception function
 *
-* Receives a character from the UART
+* Blocks the program until it receives a character from the UART
 *
 *\return byte of data received
 *\bug No bugs found
 */
 char get_char();
+
+/**
+*\brief UART dummy character reception function
+*
+* Blocks the program until it receives a character from the UART
+*
+*\bug No bugs found
+*/
+void get_dummy();
 
 /**
 *\brief UART character transmission function

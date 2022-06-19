@@ -71,7 +71,6 @@ struct k_sem sem_samp;			///< sampling finished semafore
 struct k_sem sem_filt;			///< filtering finished semafore
 struct k_sem sem_contr;			///< controlling finished semafore
 struct k_sem sem_but;			///< buttoing finished semafore
-struct k_sem sem_mach;			///< machining finished semafore
 struct k_sem sem_tim;			///< timing finished semafore
 
 uint16_t filt_in=0;			///< shared memory between sampling and filtering
@@ -228,6 +227,7 @@ void machining()
 				if(button_flag==2)				// next state condition
 				{							// next state condition
 					state=2;					// next state condition
+					uart_eco(1);				// next state condition
 					if(!PRINT_LOOP)
 					printk("Entering Automatic State\n");
 				}							// next state condition
@@ -237,6 +237,7 @@ void machining()
 				if(button_flag==1)				// next state condition
 				{							// next state condition
 					state=1;					// next state condition
+					uart_eco(0);				// next state condition
 					if(!PRINT_LOOP)
 					printk("Entering Manual State\n");
 				}							// next state condition
@@ -244,11 +245,8 @@ void machining()
 		}
 		if(PRINT_LOOP)
 		printk("machining: exiting to state %u\n",state);
-
-		k_sem_give(&sem_mach);
-		if(PRINT_LOOP)
-		printk("machining: finished machining\n");
 	}
+	if(PRINT_LOOP)
 	printk("machining: unknown state\n");
 }
 
@@ -257,21 +255,16 @@ void uarting(void* A,void* B,void* C)
 	if(PRINT_INIT)
 	printk("\tLaunched uarting thread\n");
 
-
-	int i=0;
+	char dummy;
 	while(1)
 	{
-		if(PRINT_LOOP)
-		printk("uarting: waiting for machining to finish\n");
-		k_sem_take(&sem_mach,K_FOREVER);
-		if(PRINT_LOOP)
-		printk("uarting: machining has finished\n");
-
-		if(state==2)
+		if(state==1)
 		{
-			i=get_int();
-			if(PRINT_LOOP)
-			printk("uarting: Received int %i\n",i);
+			dummy=get_char();
+		}
+		else if(state==2)
+		{
+			set_period();
 		}
 	}
 }
@@ -326,6 +319,8 @@ void main()
 {
 	printk("\n\n\nLed Controller \n");
 
+	uart_eco(1);
+
 	adc_init();
 	filter_init();
 	control_init(KI,KP);
@@ -336,11 +331,12 @@ void main()
 	schedule_init();
 	printk("\n\n\n");
 
+	uart_eco(INITIAL_STATE-1);
+
 	k_sem_init(&sem_samp,0,1);		// init sampling finished semafore
 	k_sem_init(&sem_filt,0,1);		// init filtering finished semafore
 	k_sem_init(&sem_contr,0,1);		// init controlling finished semafore
 	k_sem_init(&sem_but,0,1);		// init buttoing finished semafore
-	k_sem_init(&sem_mach,0,1);		// init machining finished semafore
 	k_sem_init(&sem_tim,0,1);		// init timing finished semafore
 
 	sampling_tid=k_thread_create(&sampling_data,sampling_stack,K_THREAD_STACK_SIZEOF(sampling_stack),			// create sampling thread
