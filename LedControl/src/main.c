@@ -19,20 +19,20 @@
 #define BUTTOING_PERIOD 100000		///< buttons check period in miliseconds
 #define TIMING_PERIOD 6000			///< timing period in miliseconds
 
-#define STATE_MACHINE_PERIOD 300		///< state machine period in miliseconds
-#define INITIAL_STATE 1
+#define INITIAL_STATE 2				///< state machine initial state
 
-#define KP 6
-#define KI 2
+#define KP 6.0				///< controller proportional coeficient
+#define KI 2.0				///< controller intergral coeficient
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define SAMPLING_PRIO 2			///< sampling thread priority
+#define SAMPLING_PRIO 3			///< sampling thread priority
 #define FILTERING_PRIO 1		///< filtering thread priority
 #define CONTROLLING_PRIO 1		///< controlling thread priority
 #define ACTUATING_PRIO 1		///< actuating thread priority
-#define BUTTONING_PRIO 3		///< buttoing thread priority
-#define UARTING_PRIO 3			///< uarting thread priority
+#define BUTTONING_PRIO 2		///< buttoing thread priority
+#define MACHINING_PRIO 2		///< machining thread priority
+#define UARTING_PRIO 2			///< uarting thread priority
 #define TIMING_PRIO 4			///< timing thread priority
 #define SCHEDULING_PRIO 1		///< scheduling thread priority
 
@@ -42,6 +42,7 @@ K_THREAD_STACK_DEFINE(filtering_stack,STACK_SIZE);		///< filtering thread stack 
 K_THREAD_STACK_DEFINE(controlling_stack,STACK_SIZE);		///< controlling thread stack size
 K_THREAD_STACK_DEFINE(actuating_stack,STACK_SIZE);		///< actuating thread stack size
 K_THREAD_STACK_DEFINE(buttoing_stack,STACK_SIZE);		///< buttoing thread stack size
+K_THREAD_STACK_DEFINE(machining_stack,STACK_SIZE);		///< machining thread stack size
 K_THREAD_STACK_DEFINE(uarting_stack,STACK_SIZE);		///< uarting thread stack size
 K_THREAD_STACK_DEFINE(timing_stack,STACK_SIZE);			///< timing thread stack size
 K_THREAD_STACK_DEFINE(scheduling_stack,STACK_SIZE);		///< timing thread stack size
@@ -56,6 +57,8 @@ struct k_thread actuating_data;	///< actuating thread initialisation
 k_tid_t actuating_tid;			///< actuating thread initialisation
 struct k_thread buttoing_data;	///< buttoing thread initialisation
 k_tid_t buttoing_tid;			///< buttoing thread initialisation
+struct k_thread machining_data;	///< machining thread initialisation
+k_tid_t machining_tid;			///< machining thread initialisation
 struct k_thread uarting_data;		///< uarting thread initialisation
 k_tid_t uarting_tid;			///< uarting thread initialisation
 struct k_thread timing_data;		///< timing thread initialisation
@@ -66,15 +69,16 @@ k_tid_t scheduling_tid;			///< scheduling thread initialisation
 struct k_sem sem_samp;			///< sampling finished semafore
 struct k_sem sem_filt;			///< filtering finished semafore
 struct k_sem sem_contr;			///< controlling finished semafore
+struct k_sem sem_but;			///< buttoing finished semafore
+struct k_sem sem_mach;			///< machining finished semafore
 struct k_sem sem_tim;			///< timing finished semafore
 
-uint16_t filt_in;				///< shared memory between sampling and filtering
-uint16_t contr_in;			///< shared memory between filtering and controlling
-uint16_t act_in;				///< shared memory between controlling and actuating
-uint8_t button_flag;			///< shared memory between buttoing and the state machine
+uint16_t filt_in=0;			///< shared memory between sampling and filtering
+uint16_t contr_in=0;			///< shared memory between filtering and controlling
+uint16_t act_in=0;			///< shared memory between controlling and actuating
+uint8_t button_flag=0;			///< shared memory between buttoing and machining
+uint8_t state=INITIAL_STATE;		///< shared memory between machining and uarting
 uint8_t target=50;			///< shared memory between scheduling and controlling
-
-uint8_t state=INITIAL_STATE;		///< state for the state machine    
 
 void sampling(void* A,void* B,void* C)
 {
@@ -176,9 +180,12 @@ void buttoing(void* A,void* B,void* C)
 	while(1)
 	{
 		button_flag=read_buttons(4)*8+read_buttons(3)*4+read_buttons(2)*2+read_buttons(1)*1;		// read buttons
-
 		if(PRINT_LOOP)
 		printk("buttoing: %u read from buttons\n",button_flag);
+
+		k_sem_give(&sem_but);
+		if(PRINT_LOOP)
+		printk("buttoing: finished buttoing\n");
 
 		curr_time=k_uptime_get();				// sleep until next period
 		if(curr_time<end_time)					// sleep until next period
@@ -189,14 +196,59 @@ void buttoing(void* A,void* B,void* C)
 	}
 }
 
+void machining()
+{	
+	while(state==1||state==2)
+	{
+		if(PRINT_LOOP)
+		printk("machining: waiting for buttoing to finish\n");
+		k_sem_take(&sem_but,K_FOREVER);
+		if(PRINT_LOOP)
+		printk("machining: buttoing has finished\n");
+
+		if(PRINT_LOOP)
+		printk("machining: entering state %u\n",state);
+		switch(state)
+		{
+			case 1:							// start of state 1 (manual state)
+				if(button_flag==2)				// next state condition
+				{							// next state condition
+					state=2;					// next state condition
+				}							// next state condition
+				break;						// end of state 1 (manual state)
+
+			case 2:							// start of state 2 (automatic state)
+				if(button_flag==1)				// next state condition
+				{							// next state condition
+					state=1;					// next state condition
+				}							// next state condition
+				break;						// end of state 2 (automatic state)
+		}
+		if(PRINT_LOOP)
+		printk("machining: exiting to state %u",state);
+
+		k_sem_give(&sem_mach);
+		if(PRINT_LOOP)
+		printk("machining: finished machining\n");
+	}
+	printk("machining: unknown state\n");
+}
+
 void uarting(void* A,void* B,void* C)
 {
 	if(PRINT_INIT)
 	printk("\tLaunched uarting thread\n");
 
+
 	int i=0;
 	while(1)
 	{
+		if(PRINT_LOOP)
+		printk("uarting: waiting for machining to finish\n");
+		k_sem_take(&sem_mach,K_FOREVER);
+		if(PRINT_LOOP)
+		printk("uarting: machining has finished\n");
+
 		if(state==2)
 		{
 			i=get_int();
@@ -250,41 +302,6 @@ void scheduling(void* A,void* B,void* C)
 	}
 }
 
-void state_machine()
-{	
-	int64_t curr_time=k_uptime_get();
-	int64_t end_time=k_uptime_get()+STATE_MACHINE_PERIOD;
-
-	while(state==1||state==2)
-	{
-		switch(state)
-		{
-			case 1:							// start of state 1 (manual state)
-				if(button_flag==2)				// next state condition
-				{							// next state condition
-					state=2;					// next state condition
-				}							// next state condition
-				break;						// end of state 1 (manual state)
-
-			case 2:							// start of state 2 (automatic state)
-				if(button_flag==1)				// next state condition
-				{							// next state condition
-					state=1;					// next state condition
-				}							// next state condition
-				break;						// end of state 2 (automatic state)
-		}
-		
-		curr_time=k_uptime_get();				// sleep until next period
-		if(curr_time<end_time)					// sleep until next period
-		{								// sleep until next period
-			k_msleep(end_time-curr_time);			// sleep until next period
-		}								// sleep until next period
-		end_time+=STATE_MACHINE_PERIOD;			// sleep until next period
-	}
-
-	printk("ERROR in State Machine : Unknown State\n");
-}
-
 void main()
 {
 	printk("\n\n\nLed Controller \n");
@@ -319,14 +336,15 @@ void main()
 	buttoing_tid=k_thread_create(&buttoing_data,buttoing_stack,K_THREAD_STACK_SIZEOF(buttoing_stack),			// create buttoing thread
 		buttoing,NULL,NULL,NULL,BUTTONING_PRIO,0,K_NO_WAIT);										// create buttoing thread
 
+	machining_tid=k_thread_create(&machining_data,machining_stack,K_THREAD_STACK_SIZEOF(machining_stack),			// create machining thread
+		machining,NULL,NULL,NULL,MACHINING_PRIO,0,K_NO_WAIT);										// create machining thread
+	
 	uarting_tid=k_thread_create(&uarting_data,uarting_stack,K_THREAD_STACK_SIZEOF(uarting_stack),				// create uarting thread
 		uarting,NULL,NULL,NULL,UARTING_PRIO,0,K_NO_WAIT);										// create uarting thread
-
+	
 	timing_tid=k_thread_create(&timing_data,timing_stack,K_THREAD_STACK_SIZEOF(timing_stack),					// create timing thread
 		timing,NULL,NULL,NULL,TIMING_PRIO,0,K_NO_WAIT);											// create timing thread
-
+	
 	scheduling_tid=k_thread_create(&scheduling_data,scheduling_stack,K_THREAD_STACK_SIZEOF(scheduling_stack),		// create scheduling thread
 		scheduling,NULL,NULL,NULL,SCHEDULING_PRIO,0,K_NO_WAIT);									// create scheduling thread
-
-	//state_machine();
 }

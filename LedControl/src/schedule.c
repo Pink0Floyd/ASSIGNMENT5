@@ -39,7 +39,7 @@ void schedule_init()
 		light_intensity[k]=0;
 		k++;
 	}
-	printk("\tInitialised timer module\n");
+	printk("\tInitialised schedule module\n");
 }
 
 void set_period()
