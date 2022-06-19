@@ -5,8 +5,8 @@
 * This module implements the functions to initialise and interact with the UART
 * 
 * \author Filipe Loureiro & Miguel Silva
-* \date 18/06/22
-* \version 5.8
+* \date 19/06/22
+* \version 5.9
 * \bug No bugs detected
 */
 
@@ -17,19 +17,26 @@
 #include <console/console.h>
 #include "base.h"
 
-#define ECO_EN 1
-
 ///////////////////////////////////////////////////////////////////////////////////////
 //  Public Functions:
 
 /**
-* \brief UART initialise function
+* \brief UART initialisation function
 *
-* Initializes the UART to use it 
+* Initializes the board UART
 *
-* \bug No bugs detected
+* \bug No bugs found
 */
 void uart_init();
+
+/**
+* \brief UART eco function
+*
+* Enables or Disables the UART eco
+*
+* \bug No bugs found
+*/
+void uart_eco(uint8_t f);
 
 /**
 *\brief UART character reception function

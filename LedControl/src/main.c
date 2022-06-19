@@ -11,12 +11,12 @@
 #include "schedule.h"
 
 #define PRINT_INIT 1			///< enable for thread initialisation prints
-#define PRINT_LOOP 1			///< enable for thread loop prints
+#define PRINT_LOOP 0			///< enable for thread loop prints
 
 #define PWM_PERIOD 1			///<< period for the PWM signal in microseconds
 
 #define SAMPLING_PERIOD 100000		///< sampling period in miliseconds
-#define BUTTOING_PERIOD 6000			///< buttons check period in miliseconds
+#define BUTTOING_PERIOD 400			///< buttons check period in miliseconds
 #define TIMING_PERIOD 60000			///< timing period in miliseconds
 
 #define MIN_PER_PERIOD 1			///< minutes to be counted per period
@@ -215,17 +215,21 @@ void machining()
 				if(button_flag==4&&target>MIN_LIGHT)	// state action
 				{							// state action
 					target--;					// state action
+					if(PRINT_LOOP)
 					printk("machining: light decreased\n");
 				}							// state action
 				else if(button_flag==8&&target<MAX_LIGHT)	// state action
 				{							// state action
 					target++;					// state action
+					if(PRINT_LOOP)
 					printk("machining: light increased\n");
 				}							// state action
 
 				if(button_flag==2)				// next state condition
 				{							// next state condition
 					state=2;					// next state condition
+					if(!PRINT_LOOP)
+					printk("Entering Automatic State\n");
 				}							// next state condition
 				break;					// end of state 1 (manual state)
 
@@ -233,6 +237,8 @@ void machining()
 				if(button_flag==1)				// next state condition
 				{							// next state condition
 					state=1;					// next state condition
+					if(!PRINT_LOOP)
+					printk("Entering Manual State\n");
 				}							// next state condition
 				break;					// end of state 2 (automatic state)
 		}

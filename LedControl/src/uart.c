@@ -1,16 +1,23 @@
 
 #include "uart.h"
 
+static uint8_t eco_flag=1;
+
 void uart_init()
 {
       console_init();
 	printk("\tInitialised uart module\n");
 }
 
+void uart_eco(uint8_t f)
+{
+	eco_flag=f%2;
+}
+
 char get_char()
 {
 	char c=console_getchar();
-	if(ECO_EN)
+	if(eco_flag==1)
 	put_char(c);
 	return c;
 }
