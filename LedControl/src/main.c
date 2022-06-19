@@ -72,6 +72,7 @@ struct k_sem sem_filt;			///< filtering finished semafore
 struct k_sem sem_contr;			///< controlling finished semafore
 struct k_sem sem_but;			///< buttoing finished semafore
 struct k_sem sem_tim;			///< timing finished semafore
+struct k_sem sem_lockedstate;		///< lockedstate semafore
 
 uint16_t filt_in=0;			///< shared memory between sampling and filtering
 uint16_t contr_in=0;			///< shared memory between filtering and controlling
@@ -207,6 +208,12 @@ void machining()
 		printk("machining: buttoing has finished\n");
 
 		if(PRINT_LOOP)
+		printk("machining: waiting for state to be unlocked\n");
+		k_sem_take(&sem_lockedstate,K_FOREVER);
+		if(PRINT_LOOP)
+		printk("machining: state has been unlocked\n");
+
+		if(PRINT_LOOP)
 		printk("machining: entering state %u\n",state);
 		switch(state)
 		{
@@ -227,7 +234,6 @@ void machining()
 				if(button_flag==2)				// next state condition
 				{							// next state condition
 					state=2;					// next state condition
-					uart_eco(1);				// next state condition
 					if(!PRINT_LOOP)
 					printk("Entering Automatic State\n");
 				}							// next state condition
@@ -237,7 +243,6 @@ void machining()
 				if(button_flag==1)				// next state condition
 				{							// next state condition
 					state=1;					// next state condition
-					uart_eco(0);				// next state condition
 					if(!PRINT_LOOP)
 					printk("Entering Manual State\n");
 				}							// next state condition
@@ -245,6 +250,10 @@ void machining()
 		}
 		if(PRINT_LOOP)
 		printk("machining: exiting to state %u\n",state);
+
+		k_sem_give(&sem_lockedstate);
+		if(PRINT_LOOP)
+		printk("machining: allowing state to be locked\n");
 	}
 	if(PRINT_LOOP)
 	printk("machining: unknown state\n");
@@ -255,16 +264,34 @@ void uarting(void* A,void* B,void* C)
 	if(PRINT_INIT)
 	printk("\tLaunched uarting thread\n");
 
-	char dummy;
 	while(1)
 	{
 		if(state==1)
 		{
-			dummy=get_char();
+			if(PRINT_LOOP)
+			printk("uarting: in state1 eco is disabled and uart is ignored\n");
+			uart_eco(0);
+			get_dummy();
 		}
 		else if(state==2)
 		{
+			if(PRINT_LOOP)
+			printk("uarting: in state2 eco is enabled and a period is read\n");
+			uart_eco(1);
+			
+			if(PRINT_LOOP)
+			printk("uarting: waiting for state to be locked\n");
+			k_sem_take(&sem_lockedstate,K_FOREVER);
+			if(PRINT_LOOP)
+			printk("uarting: state has been locked\n");
+
 			set_period();
+			uart_eco(0);
+			get_dummy();
+
+			k_sem_give(&sem_lockedstate);
+			if(PRINT_LOOP)
+			printk("uarting: allowing state to be unlocked\n");
 		}
 	}
 }
@@ -338,6 +365,7 @@ void main()
 	k_sem_init(&sem_contr,0,1);		// init controlling finished semafore
 	k_sem_init(&sem_but,0,1);		// init buttoing finished semafore
 	k_sem_init(&sem_tim,0,1);		// init timing finished semafore
+	k_sem_init(&sem_lockedstate,1,1);	// init lockedtate semafore
 
 	sampling_tid=k_thread_create(&sampling_data,sampling_stack,K_THREAD_STACK_SIZEOF(sampling_stack),			// create sampling thread
 		sampling,NULL,NULL,NULL,SAMPLING_PRIO,0,K_NO_WAIT);										// create sampling thread

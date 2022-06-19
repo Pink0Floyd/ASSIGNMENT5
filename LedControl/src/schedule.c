@@ -8,8 +8,8 @@ uint8_t light_intensity[N_INTERVAL];
 
 uint8_t get_li()
 {
-	put_str("Period ID:");uint8_t n=(uint8_t)get_int();
-	put_str("Light Intensity:");uint8_t li=(uint8_t)get_int();
+	put_str("Period ID:");uint8_t n=(uint8_t)get_int();put_eol();
+	put_str("Light Intensity:");uint8_t li=(uint8_t)get_int();put_eol();
 	n=saturation(n,0,N_INTERVAL-1);
 	li=saturation(li,MIN_LIGHT,MAX_LIGHT);
 	light_intensity[n]=li;
