@@ -270,7 +270,6 @@ void uarting(void* A,void* B,void* C)
 		{
 			if(PRINT_LOOP)
 			printk("uarting: in state1 eco is disabled and uart is ignored\n");
-			uart_eco(0);
 			get_dummy();
 		}
 		else if(state==2)
@@ -284,14 +283,18 @@ void uarting(void* A,void* B,void* C)
 			k_sem_take(&sem_lockedstate,K_FOREVER);
 			if(PRINT_LOOP)
 			printk("uarting: state has been locked\n");
-
+			
+			uart_eco(1);
 			set_period();
 			uart_eco(0);
-			get_dummy();
+			print_schedule();
+			button_flag=0;				// ignore button readings
 
 			k_sem_give(&sem_lockedstate);
 			if(PRINT_LOOP)
 			printk("uarting: allowing state to be unlocked\n");
+			
+			get_dummy();
 		}
 	}
 }
@@ -358,7 +361,7 @@ void main()
 	schedule_init();
 	printk("\n\n\n");
 
-	uart_eco(INITIAL_STATE-1);
+	uart_eco(0);
 
 	k_sem_init(&sem_samp,0,1);		// init sampling finished semafore
 	k_sem_init(&sem_filt,0,1);		// init filtering finished semafore

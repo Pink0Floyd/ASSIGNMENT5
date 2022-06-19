@@ -44,6 +44,7 @@ void schedule_init()
 
 void set_period()
 {
+	put_str("Setting a light period:");put_eol();
 	uint8_t n=get_li();
 	time_data s=get_start();
 	time_data f=get_finish();
@@ -62,4 +63,17 @@ uint8_t check_light(uint8_t light_curr)
 		r=light_curr;
 	}
 	return r;
+}
+
+void print_schedule()
+{
+	printk("Schedule:\n\n");
+	uint8_t k=0;
+	while(k<N_INTERVAL)
+	{
+		printk(" %u light during\t",light_intensity[k]);
+		print_interval(k);
+		printk("\n");
+		k++;
+	}
 }
