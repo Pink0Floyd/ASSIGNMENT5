@@ -14,7 +14,7 @@
 #define PRINT_LOOP 2			///< enable for thread loop prints
 unsigned int lock_key;
 
-#define PWM_PERIOD 1			///<< period for the PWM signal in microseconds
+#define PWM_PERIOD 100			///<< period for the PWM signal in microseconds
 
 #define SAMPLING_PERIOD 1000			///< sampling period in miliseconds
 #define ACTUATING_PERIOD 1800			///< actuating period in milisecods
