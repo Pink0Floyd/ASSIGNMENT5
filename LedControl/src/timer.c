@@ -142,7 +142,7 @@ time_data read_time_curr()
 
 void print_time(time_data t)
 {
-	printk("%u:%u:%u",t.day,t.hour,t.min);
+	printk("%u|%u:%u:00",t.day,t.hour,t.min);
 }
 
 time_data scan_time()

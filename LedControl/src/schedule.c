@@ -9,8 +9,8 @@ uint8_t default_light;
 
 uint8_t get_li()
 {
-	put_str("Period ID:");uint8_t n=(uint8_t)get_int();put_eol();
-	put_str("Light Intensity:");uint8_t li=(uint8_t)get_int();put_eol();
+	put_str("Period ID: ");uint8_t n=(uint8_t)get_int();put_eol();
+	put_str("Light Intensity: ");uint8_t li=(uint8_t)get_int();put_eol();
 	n=saturation(n,0,N_INTERVAL-1);
 	li=saturation(li,MIN_LIGHT,MAX_LIGHT);
 	light_intensity[n]=li;
@@ -19,13 +19,13 @@ uint8_t get_li()
 
 time_data get_start()
 {
-	put_str("Start time:\n");
+	put_str("Start time: \n");
 	return scan_time();
 }
 
 time_data get_finish()
 {
-	put_str("Finish time:\n");
+	put_str("Finish time: \n");
 	return scan_time();
 }
 
@@ -69,13 +69,14 @@ int8_t check_light()
 
 void print_schedule()
 {
-	printk("Schedule:\n\n");
+	printk("\nSchedule:\n");
 	uint8_t k=0;
 	while(k<N_INTERVAL)
 	{
-		printk(" %u light during\t",light_intensity[k]);
+		printk(" %u\tlight during\t",light_intensity[k]);
 		print_interval(k);
 		printk("\n");
 		k++;
 	}
+	printk("\n");
 }

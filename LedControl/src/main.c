@@ -11,7 +11,7 @@
 #include "schedule.h"
 
 #define PRINT_INIT 0			///< enable for thread initialisation prints
-#define PRINT_LOOP 0			///< enable for thread loop prints
+#define PRINT_LOOP 2			///< enable for thread loop prints
 unsigned int lock_key;
 
 #define PWM_PERIOD 100			///<< period for the PWM signal in microseconds
@@ -78,8 +78,8 @@ struct k_sem sem_tim;			///< timing finished semafore
 struct k_sem sem_lockedstate;		///< lockedstate semafore
 
 uint16_t filt_in=0;			///< shared memory between sampling and filtering
-uint16_t contr_in=0;			///< shared memory between filtering and controlling
-uint16_t act_in=0;			///< shared memory between controlling and actuating
+uint8_t contr_in=0;			///< shared memory between filtering and controlling
+uint8_t act_in=0;				///< shared memory between controlling and actuating
 uint8_t button_flag=0;			///< shared memory between buttoing and machining
 uint8_t state=INITIAL_STATE;		///< shared memory between machining and uarting
 int8_t target=50;				///< shared memory between scheduling and controlling
@@ -426,9 +426,12 @@ void main()
 	timer_init();
 	schedule_init();
 
-	printk("\n\n\n");
-	printk("\t\t\t\t\t time\t\t\t samp\t-> filt\t\t\t contr\t-> act\t\t\t butt\t-> state\t\t\t target");
-	printk("\n\n\n");
+	if(PRINT_LOOP==2)
+	{
+		printk("\n\n\n");
+		printk("\t\t\t\t\t time\t\t\t samp\t-> filt\t\t\t contr\t-> act\t\t\t butt\t-> state\t\t\t target");
+		printk("\n\n\n");
+	}
 
 	uart_eco(0);
 
