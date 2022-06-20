@@ -15,9 +15,10 @@
 
 #define PWM_PERIOD 1			///<< period for the PWM signal in microseconds
 
-#define SAMPLING_PERIOD 100000		///< sampling period in miliseconds
-#define BUTTOING_PERIOD 400			///< buttons check period in miliseconds
-#define TIMING_PERIOD 60000			///< timing period in miliseconds
+#define SAMPLING_PERIOD 10000			///< sampling period in miliseconds
+#define ACTUATING_PERIOD 18000		///< actuating period in milisecods
+#define BUTTOING_PERIOD 4000			///< buttons check period in miliseconds
+#define TIMING_PERIOD 30000			///< timing period in miliseconds
 
 #define MIN_PER_PERIOD 1			///< minutes to be counted per period
 #define INITIAL_STATE 1				///< state machine initial state
@@ -27,17 +28,19 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-#define SAMPLING_PRIO 3			///< sampling thread priority
-#define FILTERING_PRIO 1		///< filtering thread priority
-#define CONTROLLING_PRIO 1		///< controlling thread priority
-#define ACTUATING_PRIO 1		///< actuating thread priority
-#define BUTTONING_PRIO 2		///< buttoing thread priority
-#define MACHINING_PRIO 2		///< machining thread priority
-#define UARTING_PRIO 2			///< uarting thread priority
-#define TIMING_PRIO 4			///< timing thread priority
-#define SCHEDULING_PRIO 1		///< scheduling thread priority
+//#define CONFIG_NUM_PREEMPT_PRIORITIES 6
+#define SAMPLING_PRIO 2			///< sampling thread priority
+#define FILTERING_PRIO 2		///< filtering thread priority
+#define CONTROLLING_PRIO 4		///< controlling thread priority
+#define ACTUATING_PRIO 4		///< actuating thread priority
+#define BUTTONING_PRIO 3		///< buttoing thread priority
+#define MACHINING_PRIO 3		///< machining thread priority
+#define UARTING_PRIO 3			///< uarting thread priority
+#define TIMING_PRIO 1			///< timing thread priority
+#define SCHEDULING_PRIO 5		///< scheduling thread priority
+#define PRINTING_PRIO 6			///< printing thread priority
 
-#define STACK_SIZE 2048							///< thread stack size
+#define STACK_SIZE 1024							///< thread stack size
 K_THREAD_STACK_DEFINE(sampling_stack,STACK_SIZE);		///< sampling thread stack size
 K_THREAD_STACK_DEFINE(filtering_stack,STACK_SIZE);		///< filtering thread stack size
 K_THREAD_STACK_DEFINE(controlling_stack,STACK_SIZE);		///< controlling thread stack size
@@ -46,7 +49,8 @@ K_THREAD_STACK_DEFINE(buttoing_stack,STACK_SIZE);		///< buttoing thread stack si
 K_THREAD_STACK_DEFINE(machining_stack,STACK_SIZE);		///< machining thread stack size
 K_THREAD_STACK_DEFINE(uarting_stack,STACK_SIZE);		///< uarting thread stack size
 K_THREAD_STACK_DEFINE(timing_stack,STACK_SIZE);			///< timing thread stack size
-K_THREAD_STACK_DEFINE(scheduling_stack,STACK_SIZE);		///< timing thread stack size
+K_THREAD_STACK_DEFINE(scheduling_stack,STACK_SIZE);		///< scheduling thread stack size
+K_THREAD_STACK_DEFINE(printing_stack,STACK_SIZE);		///< printing thread stack size
 
 struct k_thread sampling_data;	///< sampling thread initialisation
 k_tid_t sampling_tid;			///< sampling thread initialisation
@@ -66,9 +70,11 @@ struct k_thread timing_data;		///< timing thread initialisation
 k_tid_t timing_tid;			///< timing thread initialisation
 struct k_thread scheduling_data;	///< scheduling thread initialisation
 k_tid_t scheduling_tid;			///< scheduling thread initialisation
+struct k_thread printing_data;	///< printing thread initialisation
+k_tid_t printing_tid;			///< printing thread initialisation
 
 struct k_sem sem_samp;			///< sampling finished semafore
-struct k_sem sem_filt;			///< filtering finished semafore
+struct k_sem sem_act;			///< actuating started semafore
 struct k_sem sem_contr;			///< controlling finished semafore
 struct k_sem sem_but;			///< buttoing finished semafore
 struct k_sem sem_tim;			///< timing finished semafore
@@ -122,10 +128,6 @@ void filtering(void* A,void* B,void* C)
 		contr_in=filter(filt_in);								// filter
 		if(PRINT_LOOP)
 		printk("filtering: filtered %u to %u\n",filt_in,contr_in);
-
-		k_sem_give(&sem_filt);									// wake up controlling
-		if(PRINT_LOOP)
-		printk("filtering: finished filtering\n");
 	}
 }
 
@@ -137,10 +139,10 @@ void controlling(void* A,void* B,void* C)
 	while(1)
 	{
 		if(PRINT_LOOP)
-		printk("controlling: waiting for filtering to finish\n");
-		k_sem_take(&sem_filt,K_FOREVER);							// sleep until filtering finishes
+		printk("\ncontrolling: waiting for actuating to started\n");
+		k_sem_take(&sem_act,K_FOREVER);							// sleep until actuating starts
 		if(PRINT_LOOP)
-		printk("controlling: filtering finished\n");
+		printk("controlling: actuating has started\n");
 
 		act_in=controller(contr_in,target);							// control
 		if(PRINT_LOOP)
@@ -157,17 +159,30 @@ void actuating(void* A,void* B,void* C)
 	if(PRINT_INIT)
 	printk("\tLaunched actuating thread\n");
 
+	int64_t curr_time=k_uptime_get();
+	int64_t end_time=k_uptime_get()+ACTUATING_PERIOD;
 	while(1)
 	{
+		k_sem_give(&sem_act);									// wake up controlling
+		if(PRINT_LOOP)
+		printk("actuating: started actuating\n");
+
 		if(PRINT_LOOP)
 		printk("actuating: waiting for controlling to finish\n");
 		k_sem_take(&sem_contr,K_FOREVER);							// sleep until controlling finishes
 		if(PRINT_LOOP)
-		printk("actuating: got a filtered sample from filtering\n");
+		printk("actuating: contrlling has finished\n");
 
 		pwm_led_set(act_in);									// act
 		if(PRINT_LOOP)
 		printk("actuating: pwm has been set to %u %%\n",act_in);
+
+		curr_time=k_uptime_get();				// sleep until next period
+		if(curr_time<end_time)					// sleep until next period
+		{								// sleep until next period
+			k_msleep(end_time-curr_time);			// sleep until next period
+		}								// sleep until next period
+		end_time+=ACTUATING_PERIOD;				// sleep until next period
 	}
 }
 
@@ -184,7 +199,7 @@ void buttoing(void* A,void* B,void* C)
 		if(PRINT_LOOP)
 		printk("\nbuttoing: %u read from buttons\n",button_flag);
 
-		k_sem_give(&sem_but);
+		k_sem_give(&sem_but);								// wake up machining
 		if(PRINT_LOOP)
 		printk("buttoing: finished buttoing\n");
 
@@ -203,7 +218,7 @@ void machining()
 	{
 		if(PRINT_LOOP)
 		printk("machining: waiting for buttoing to finish\n");
-		k_sem_take(&sem_but,K_FOREVER);
+		k_sem_take(&sem_but,K_FOREVER);						// sleep until buttoing finishes
 		if(PRINT_LOOP)
 		printk("machining: buttoing has finished\n");
 
@@ -217,36 +232,36 @@ void machining()
 		printk("machining: entering state %u\n",state);
 		switch(state)
 		{
-			case 1:						// start of state 1 (manual state)
-				if(button_flag==4&&target>MIN_LIGHT)	// state action
-				{							// state action
-					target--;					// state action
+			case 1:							// start of state 1 (manual state)
+				if(button_flag==4&&target>MIN_LIGHT)		// state action
+				{								// state action
+					target--;						// state action
 					if(PRINT_LOOP)
 					printk("machining: light decreased\n");
-				}							// state action
-				else if(button_flag==8&&target<MAX_LIGHT)	// state action
-				{							// state action
-					target++;					// state action
+				}								// state action
+				else if(button_flag==8&&target<MAX_LIGHT)		// state action
+				{								// state action
+					target++;						// state action
 					if(PRINT_LOOP)
 					printk("machining: light increased\n");
-				}							// state action
+				}								// state action
 
-				if(button_flag==2)				// next state condition
-				{							// next state condition
-					state=2;					// next state condition
+				if(button_flag==2)					// next state condition
+				{								// next state condition
+					state=2;						// next state condition
 					if(!PRINT_LOOP)
 					printk("Entering Automatic State\n");
-				}							// next state condition
-				break;					// end of state 1 (manual state)
+				}								// next state condition
+				break;						// end of state 1 (manual state)
 
-			case 2:						// start of state 2 (automatic state)
-				if(button_flag==1)				// next state condition
-				{							// next state condition
-					state=1;					// next state condition
+			case 2:							// start of state 2 (automatic state)
+				if(button_flag==1)					// next state condition
+				{								// next state condition
+					state=1;						// next state condition
 					if(!PRINT_LOOP)
 					printk("Entering Manual State\n");
-				}							// next state condition
-				break;					// end of state 2 (automatic state)
+				}								// next state condition
+				break;						// end of state 2 (automatic state)
 		}
 		if(PRINT_LOOP)
 		printk("machining: exiting to state %u\n",state);
@@ -313,6 +328,8 @@ void timing(void* A,void* B,void* C)
 		printk("\ntiming: a minute has passed\n");
 		if(PRINT_LOOP)
 		print_time(read_time_curr());
+		if(PRINT_LOOP)
+		printk("\n");
 		k_sem_give(&sem_tim);
 		if(PRINT_LOOP)
 		printk("timing: finished timing\n");
@@ -364,7 +381,7 @@ void main()
 	uart_eco(0);
 
 	k_sem_init(&sem_samp,0,1);		// init sampling finished semafore
-	k_sem_init(&sem_filt,0,1);		// init filtering finished semafore
+	k_sem_init(&sem_act,0,1);		// init actuating started semafore
 	k_sem_init(&sem_contr,0,1);		// init controlling finished semafore
 	k_sem_init(&sem_but,0,1);		// init buttoing finished semafore
 	k_sem_init(&sem_tim,0,1);		// init timing finished semafore
