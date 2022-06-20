@@ -10,17 +10,18 @@
 #include "timer.h"
 #include "schedule.h"
 
-#define PRINT_INIT 1			///< enable for thread initialisation prints
-#define PRINT_LOOP 0			///< enable for thread loop prints
+#define PRINT_INIT 0			///< enable for thread initialisation prints
+#define PRINT_LOOP 2			///< enable for thread loop prints
+unsigned int lock_key;
 
 #define PWM_PERIOD 1			///<< period for the PWM signal in microseconds
 
-#define SAMPLING_PERIOD 10000			///< sampling period in miliseconds
-#define ACTUATING_PERIOD 18000		///< actuating period in milisecods
-#define BUTTOING_PERIOD 4000			///< buttons check period in miliseconds
-#define TIMING_PERIOD 30000			///< timing period in miliseconds
+#define SAMPLING_PERIOD 1000			///< sampling period in miliseconds
+#define ACTUATING_PERIOD 1800			///< actuating period in milisecods
+#define BUTTOING_PERIOD 400			///< buttons check period in miliseconds
+#define TIMING_PERIOD 3000			///< timing period in miliseconds
 
-#define MIN_PER_PERIOD 1			///< minutes to be counted per period
+#define MIN_PER_PERIOD 11			///< minutes to be counted per period
 #define INITIAL_STATE 1				///< state machine initial state
 
 #define KP 6.0				///< controller proportional coeficient
@@ -38,7 +39,6 @@
 #define UARTING_PRIO 3			///< uarting thread priority
 #define TIMING_PRIO 1			///< timing thread priority
 #define SCHEDULING_PRIO 5		///< scheduling thread priority
-#define PRINTING_PRIO 6			///< printing thread priority
 
 #define STACK_SIZE 1024							///< thread stack size
 K_THREAD_STACK_DEFINE(sampling_stack,STACK_SIZE);		///< sampling thread stack size
@@ -50,7 +50,6 @@ K_THREAD_STACK_DEFINE(machining_stack,STACK_SIZE);		///< machining thread stack 
 K_THREAD_STACK_DEFINE(uarting_stack,STACK_SIZE);		///< uarting thread stack size
 K_THREAD_STACK_DEFINE(timing_stack,STACK_SIZE);			///< timing thread stack size
 K_THREAD_STACK_DEFINE(scheduling_stack,STACK_SIZE);		///< scheduling thread stack size
-K_THREAD_STACK_DEFINE(printing_stack,STACK_SIZE);		///< printing thread stack size
 
 struct k_thread sampling_data;	///< sampling thread initialisation
 k_tid_t sampling_tid;			///< sampling thread initialisation
@@ -70,8 +69,6 @@ struct k_thread timing_data;		///< timing thread initialisation
 k_tid_t timing_tid;			///< timing thread initialisation
 struct k_thread scheduling_data;	///< scheduling thread initialisation
 k_tid_t scheduling_tid;			///< scheduling thread initialisation
-struct k_thread printing_data;	///< printing thread initialisation
-k_tid_t printing_tid;			///< printing thread initialisation
 
 struct k_sem sem_samp;			///< sampling finished semafore
 struct k_sem sem_act;			///< actuating started semafore
@@ -97,11 +94,11 @@ void sampling(void* A,void* B,void* C)
 	while(1)
 	{
 		filt_in=adc_sample();					// sample
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==1)
 		printk("\nsampling: sampled %u\n",filt_in);
 
-		k_sem_give(&sem_samp);				// wake up filtering
-		if(PRINT_LOOP)
+		k_sem_give(&sem_samp);					// wake up filtering
+		if(PRINT_LOOP==1)
 		printk("sampling: finished sampling\n");
 
 		curr_time=k_uptime_get();				// sleep until next period
@@ -119,14 +116,21 @@ void filtering(void* A,void* B,void* C)
 	printk("\tLaunched filtering thread\n");
 	while(1)
 	{
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==1)
 		printk("filtering: waiting for sampling to finish\n");
 		k_sem_take(&sem_samp,K_FOREVER);							// sleep until sampling finishes
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==1)
 		printk("filtering: sampling finished\n");
 
 		contr_in=filter(filt_in);								// filter
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==2)
+		{
+			lock_key=irq_lock();
+			printk("\t\t\t\t\t\t\t\t %u\t-> %u\n",filt_in,contr_in);
+			irq_unlock(lock_key);
+		}
+
+		if(PRINT_LOOP==1)
 		printk("filtering: filtered %u to %u\n",filt_in,contr_in);
 	}
 }
@@ -138,18 +142,25 @@ void controlling(void* A,void* B,void* C)
 
 	while(1)
 	{
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==1)
 		printk("\ncontrolling: waiting for actuating to started\n");
 		k_sem_take(&sem_act,K_FOREVER);							// sleep until actuating starts
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==1)
 		printk("controlling: actuating has started\n");
 
 		act_in=controller(contr_in,target);							// control
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==2)
+		{
+			lock_key=irq_lock();
+			printk("\t\t\t\t\t\t\t\t\t\t\t\t %u\t-> %u\n",contr_in,act_in);
+			irq_unlock(lock_key);
+		}
+
+		if(PRINT_LOOP==1)
 		printk("controlling: controlled %u to %u attempting to get %u\n",contr_in,act_in,target);
 
 		k_sem_give(&sem_contr);									// wake up actuating
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==1)
 		printk("controlling: finished controlling\n");
 	}
 }
@@ -164,17 +175,18 @@ void actuating(void* A,void* B,void* C)
 	while(1)
 	{
 		k_sem_give(&sem_act);									// wake up controlling
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==1)
 		printk("actuating: started actuating\n");
 
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==1)
 		printk("actuating: waiting for controlling to finish\n");
 		k_sem_take(&sem_contr,K_FOREVER);							// sleep until controlling finishes
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==1)
 		printk("actuating: contrlling has finished\n");
 
 		pwm_led_set(act_in);									// act
-		if(PRINT_LOOP)
+
+		if(PRINT_LOOP==1)
 		printk("actuating: pwm has been set to %u %%\n",act_in);
 
 		curr_time=k_uptime_get();				// sleep until next period
@@ -196,11 +208,12 @@ void buttoing(void* A,void* B,void* C)
 	while(1)
 	{
 		button_flag=read_buttons(4)*8+read_buttons(3)*4+read_buttons(2)*2+read_buttons(1)*1;		// read buttons
-		if(PRINT_LOOP)
+
+		if(PRINT_LOOP==1)
 		printk("\nbuttoing: %u read from buttons\n",button_flag);
 
 		k_sem_give(&sem_but);								// wake up machining
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==1)
 		printk("buttoing: finished buttoing\n");
 
 		curr_time=k_uptime_get();				// sleep until next period
@@ -216,19 +229,19 @@ void machining()
 {	
 	while(state==1||state==2)
 	{
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==1)
 		printk("machining: waiting for buttoing to finish\n");
 		k_sem_take(&sem_but,K_FOREVER);						// sleep until buttoing finishes
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==1)
 		printk("machining: buttoing has finished\n");
 
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==1)
 		printk("machining: waiting for state to be unlocked\n");
 		k_sem_take(&sem_lockedstate,K_FOREVER);
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==1)
 		printk("machining: state has been unlocked\n");
 
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==1)
 		printk("machining: entering state %u\n",state);
 		switch(state)
 		{
@@ -236,20 +249,20 @@ void machining()
 				if(button_flag==4&&target>MIN_LIGHT)		// state action
 				{								// state action
 					target--;						// state action
-					if(PRINT_LOOP)
+					if(PRINT_LOOP==1)
 					printk("machining: light decreased\n");
 				}								// state action
 				else if(button_flag==8&&target<MAX_LIGHT)		// state action
 				{								// state action
 					target++;						// state action
-					if(PRINT_LOOP)
+					if(PRINT_LOOP==1)
 					printk("machining: light increased\n");
 				}								// state action
 
 				if(button_flag==2)					// next state condition
 				{								// next state condition
 					state=2;						// next state condition
-					if(!PRINT_LOOP)
+					if(PRINT_LOOP==0)
 					printk("Entering Automatic State\n");
 				}								// next state condition
 				break;						// end of state 1 (manual state)
@@ -258,19 +271,26 @@ void machining()
 				if(button_flag==1)					// next state condition
 				{								// next state condition
 					state=1;						// next state condition
-					if(!PRINT_LOOP)
+					if(PRINT_LOOP==0)
 					printk("Entering Manual State\n");
 				}								// next state condition
 				break;						// end of state 2 (automatic state)
 		}
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==2)
+		{
+			lock_key=irq_lock();
+			printk("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t %u\t-> %u\n",button_flag,state);
+			irq_unlock(lock_key);
+		}
+
+		if(PRINT_LOOP==1)
 		printk("machining: exiting to state %u\n",state);
 
 		k_sem_give(&sem_lockedstate);
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==1)
 		printk("machining: allowing state to be locked\n");
 	}
-	if(PRINT_LOOP)
+	if(PRINT_LOOP==1)
 	printk("machining: unknown state\n");
 }
 
@@ -283,30 +303,34 @@ void uarting(void* A,void* B,void* C)
 	{
 		if(state==1)
 		{
-			if(PRINT_LOOP)
+			if(PRINT_LOOP==1)
 			printk("uarting: in state1 eco is disabled and uart is ignored\n");
 			get_dummy();
 		}
 		else if(state==2)
 		{
-			if(PRINT_LOOP)
+			if(PRINT_LOOP==1)
 			printk("uarting: in state2 eco is enabled and a period is read\n");
 			uart_eco(1);
 			
-			if(PRINT_LOOP)
+			if(PRINT_LOOP==1)
 			printk("uarting: waiting for state to be locked\n");
 			k_sem_take(&sem_lockedstate,K_FOREVER);
-			if(PRINT_LOOP)
+			if(PRINT_LOOP==1)
 			printk("uarting: state has been locked\n");
 			
+			if(PRINT_LOOP==2)
+			lock_key=irq_lock();
 			uart_eco(1);
 			set_period();
 			uart_eco(0);
+			if(PRINT_LOOP==2)
+			irq_unlock(lock_key);
 			print_schedule();
 			button_flag=0;				// ignore button readings
 
 			k_sem_give(&sem_lockedstate);
-			if(PRINT_LOOP)
+			if(PRINT_LOOP==1)
 			printk("uarting: allowing state to be unlocked\n");
 			
 			get_dummy();
@@ -324,14 +348,21 @@ void timing(void* A,void* B,void* C)
 	while(1)
 	{
 		update_time(MIN_PER_PERIOD);				// advance current time
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==2)
+		{
+			lock_key=irq_lock();
+			printk("\t\t\t\t\t");
+			print_time(read_time_curr());
+			printk("\n");
+			irq_unlock(lock_key);
+		}
+
+		if(PRINT_LOOP==1)
 		printk("\ntiming: a minute has passed\n");
-		if(PRINT_LOOP)
-		print_time(read_time_curr());
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==1)
 		printk("\n");
 		k_sem_give(&sem_tim);
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==1)
 		printk("timing: finished timing\n");
 
 		curr_time=k_uptime_get();				// sleep until next period
@@ -350,14 +381,21 @@ void scheduling(void* A,void* B,void* C)
 
 	while(1)
 	{
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==1)
 		printk("scheduling: waiting for timing to finish\n");
 		k_sem_take(&sem_tim,K_FOREVER);
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==1)
 		printk("scheduling: timing has finished\n");
 
 		target=check_light(target);
-		if(PRINT_LOOP)
+		if(PRINT_LOOP==2)
+		{
+			lock_key=irq_lock();
+			printk("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t (%u)\n",target);
+			irq_unlock(lock_key);
+		}
+
+		if(PRINT_LOOP==1)
 		printk("scheduling: this period's light is %u\n",target);
 	}
 }
@@ -376,6 +414,8 @@ void main()
 	uart_init();
 	timer_init();
 	schedule_init();
+	printk("\n\n\n");
+	printk("\t\t\t\t\t time\t\t\t samp\t-> filt\t\t\t contr\t-> act\t\t\t butt\t-> state\t\t\t target");
 	printk("\n\n\n");
 
 	uart_eco(0);
