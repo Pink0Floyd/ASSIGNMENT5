@@ -6,7 +6,7 @@
 *
 * \author Filipe Loureiro & Miguel Silva
 * \date 20/06/22
-* \version 5.8
+* \version 5.9
 * \bug No bugs found
 */
 
@@ -31,7 +31,7 @@ time_data get_finish();
 
 void schedule_init();
 void set_period();
-uint8_t check_light(uint8_t light_curr);
+int8_t check_light();
 void print_schedule();
 
 #endif

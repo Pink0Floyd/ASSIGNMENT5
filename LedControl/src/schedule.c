@@ -52,7 +52,7 @@ void set_period()
 	set_interval(n,s,f);
 }
 
-int8_t check_light(int8_t light_curr)
+int8_t check_light()
 {
 	uint8_t r=check_interval();
 	if(r!=N_INTERVAL)

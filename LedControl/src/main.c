@@ -83,6 +83,7 @@ uint16_t act_in=0;			///< shared memory between controlling and actuating
 uint8_t button_flag=0;			///< shared memory between buttoing and machining
 uint8_t state=INITIAL_STATE;		///< shared memory between machining and uarting
 int8_t target=50;				///< shared memory between scheduling and controlling
+int8_t target_mod=0;			///< shared memory between machining and controlling
 
 void sampling(void* A,void* B,void* C)
 {
@@ -148,7 +149,7 @@ void controlling(void* A,void* B,void* C)
 		if(PRINT_LOOP==1)
 		printk("controlling: actuating has started\n");
 
-		act_in=controller(contr_in,target);							// control
+		act_in=controller(contr_in,target+target_mod);						// control
 		if(PRINT_LOOP==2)
 		{
 			lock_key=irq_lock();
@@ -225,8 +226,11 @@ void buttoing(void* A,void* B,void* C)
 	}
 }
 
-void machining()	
-{	
+void machining(void* A,void* B,void* C)	
+{
+	if(PRINT_INIT)
+	printk("\tLaunched machining thread\n");
+
 	while(state==1||state==2)
 	{
 		if(PRINT_LOOP==1)
@@ -248,13 +252,13 @@ void machining()
 			case 1:							// start of state 1 (manual state)
 				if(button_flag==4&&target>MIN_LIGHT)		// state action
 				{								// state action
-					target--;						// state action
+					target_mod--;					// state action
 					if(PRINT_LOOP==1)
 					printk("machining: light decreased\n");
 				}								// state action
 				else if(button_flag==8&&target<MAX_LIGHT)		// state action
 				{								// state action
-					target++;						// state action
+					target_mod++;					// state action
 					if(PRINT_LOOP==1)
 					printk("machining: light increased\n");
 				}								// state action
@@ -379,6 +383,7 @@ void scheduling(void* A,void* B,void* C)
 	if(PRINT_INIT)
 	printk("\tLaunched scheduling thread\n");
 
+	int8_t prev_target=0;
 	while(1)
 	{
 		if(PRINT_LOOP==1)
@@ -387,7 +392,13 @@ void scheduling(void* A,void* B,void* C)
 		if(PRINT_LOOP==1)
 		printk("scheduling: timing has finished\n");
 
-		target=check_light(target);
+		prev_target=target;
+		target=check_light();
+		if(prev_target!=target)
+		{
+			target_mod=0;
+		}
+
 		if(PRINT_LOOP==2)
 		{
 			lock_key=irq_lock();
