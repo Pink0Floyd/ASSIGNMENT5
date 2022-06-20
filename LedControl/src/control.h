@@ -5,8 +5,8 @@
 * This module contains functions to implement the controller
 *
 * \author Filipe Loureiro & Miguel Silva
-* \date 18/06/22
-* \version 5.9
+* \date 20/06/22
+* \version 5.10
 * \bug No bugs found
 */
 
@@ -14,13 +14,14 @@
 #define _CONTROL_H
 
 #include "base.h"
+#include "math.h"
 
 #define DECAY_FACTOR 0.99
-#define MIN_INT_ERROR -12
-#define MAX_INT_ERROR 12
+#define MIN_INT_ERROR -1200
+#define MAX_INT_ERROR 1200
 
-#define MIN_CONTROLLER_VALUE 4
-#define MAX_CONTROLLER_VALUE 96
+#define MIN_CONTROLLER_VALUE 0
+#define MAX_CONTROLLER_VALUE 100
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Public Member Functions

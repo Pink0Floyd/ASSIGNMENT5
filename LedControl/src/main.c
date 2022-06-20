@@ -11,21 +11,21 @@
 #include "schedule.h"
 
 #define PRINT_INIT 0			///< enable for thread initialisation prints
-#define PRINT_LOOP 2			///< enable for thread loop prints
+#define PRINT_LOOP 0			///< enable for thread loop prints
 unsigned int lock_key;
 
 #define PWM_PERIOD 100			///<< period for the PWM signal in microseconds
 
-#define SAMPLING_PERIOD 1000			///< sampling period in miliseconds
-#define ACTUATING_PERIOD 1800			///< actuating period in milisecods
-#define BUTTOING_PERIOD 400			///< buttons check period in miliseconds
-#define TIMING_PERIOD 3000			///< timing period in miliseconds
+#define SAMPLING_PERIOD (1000/5)			///< sampling period in miliseconds
+#define ACTUATING_PERIOD (1800/2)			///< actuating period in milisecods
+#define BUTTOING_PERIOD (400/2)			///< buttons check period in miliseconds
+#define TIMING_PERIOD (3000/3)			///< timing period in miliseconds
 
 #define MIN_PER_PERIOD 11			///< minutes to be counted per period
 #define INITIAL_STATE 1				///< state machine initial state
 
-#define KP 6.0				///< controller proportional coeficient
-#define KI 2.0				///< controller intergral coeficient
+#define KP 0.6				///< controller proportional coeficient
+#define KI 0.2				///< controller intergral coeficient
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -83,7 +83,7 @@ uint16_t act_in=0;			///< shared memory between controlling and actuating
 uint8_t button_flag=0;			///< shared memory between buttoing and machining
 uint8_t state=INITIAL_STATE;		///< shared memory between machining and uarting
 int8_t target=50;				///< shared memory between scheduling and controlling
-int8_t target_mod=0;			///< shared memory between machining and controlling
+int8_t target_mod=12;			///< shared memory between machining and controlling
 
 void sampling(void* A,void* B,void* C)
 {
@@ -250,15 +250,15 @@ void machining(void* A,void* B,void* C)
 		switch(state)
 		{
 			case 1:							// start of state 1 (manual state)
-				if(button_flag==4&&target>MIN_LIGHT)		// state action
+				if(button_flag==4&&target+target_mod>MIN_LIGHT)		// state action
 				{								// state action
-					target_mod--;					// state action
+					target_mod-=2;					// state action
 					if(PRINT_LOOP==1)
 					printk("machining: light decreased\n");
 				}								// state action
-				else if(button_flag==8&&target<MAX_LIGHT)		// state action
+				else if(button_flag==8&&target+target_mod<MAX_LIGHT)		// state action
 				{								// state action
-					target_mod++;					// state action
+					target_mod+=2;					// state action
 					if(PRINT_LOOP==1)
 					printk("machining: light increased\n");
 				}								// state action
@@ -425,6 +425,7 @@ void main()
 	uart_init();
 	timer_init();
 	schedule_init();
+
 	printk("\n\n\n");
 	printk("\t\t\t\t\t time\t\t\t samp\t-> filt\t\t\t contr\t-> act\t\t\t butt\t-> state\t\t\t target");
 	printk("\n\n\n");
