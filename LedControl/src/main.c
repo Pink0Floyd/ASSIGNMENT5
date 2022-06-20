@@ -82,7 +82,7 @@ uint16_t contr_in=0;			///< shared memory between filtering and controlling
 uint16_t act_in=0;			///< shared memory between controlling and actuating
 uint8_t button_flag=0;			///< shared memory between buttoing and machining
 uint8_t state=INITIAL_STATE;		///< shared memory between machining and uarting
-uint8_t target=50;			///< shared memory between scheduling and controlling
+int8_t target=50;				///< shared memory between scheduling and controlling
 
 void sampling(void* A,void* B,void* C)
 {

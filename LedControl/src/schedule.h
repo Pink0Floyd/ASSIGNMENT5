@@ -5,8 +5,8 @@
 * This module contains functions to implement a schedule
 *
 * \author Filipe Loureiro & Miguel Silva
-* \date 19/06/22
-* \version 5.7
+* \date 20/06/22
+* \version 5.8
 * \bug No bugs found
 */
 

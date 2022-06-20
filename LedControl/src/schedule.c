@@ -2,6 +2,7 @@
 #include "schedule.h"
 
 uint8_t light_intensity[N_INTERVAL];
+uint8_t default_light;
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Private Member Functions
@@ -51,18 +52,19 @@ void set_period()
 	set_interval(n,s,f);
 }
 
-uint8_t check_light(uint8_t light_curr)
+int8_t check_light(int8_t light_curr)
 {
 	uint8_t r=check_interval();
 	if(r!=N_INTERVAL)
 	{
 		r=light_intensity[r];
+		
 	}
 	else
 	{
-		r=light_curr;
+		r=MIN_LIGHT;
 	}
-	return r;
+	return (int8_t)r;
 }
 
 void print_schedule()
