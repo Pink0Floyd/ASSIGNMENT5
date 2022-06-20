@@ -402,7 +402,7 @@ void scheduling(void* A,void* B,void* C)
 		if(PRINT_LOOP==2)
 		{
 			lock_key=irq_lock();
-			printk("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t (%u)\n",target);
+			printk("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t (%i)\n",target+target_mod);
 			irq_unlock(lock_key);
 		}
 
