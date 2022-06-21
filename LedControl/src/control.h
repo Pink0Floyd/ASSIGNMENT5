@@ -16,9 +16,9 @@
 #include "base.h"
 #include "math.h"
 
-#define DECAY_FACTOR 0.99
-#define MIN_INT_ERROR -1200
-#define MAX_INT_ERROR 1200
+#define DECAY_FACTOR 0.999
+#define MIN_INT_ERROR -6000
+#define MAX_INT_ERROR 6000
 
 #define MIN_CONTROLLER_VALUE 0
 #define MAX_CONTROLLER_VALUE 100

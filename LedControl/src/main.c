@@ -17,15 +17,15 @@ unsigned int lock_key;
 #define PWM_PERIOD 100			///<< period for the PWM signal in microseconds
 
 #define SAMPLING_PERIOD (1000/5)			///< sampling period in miliseconds
-#define ACTUATING_PERIOD (1800/2)			///< actuating period in milisecods
-#define BUTTOING_PERIOD (400/2)			///< buttons check period in miliseconds
+#define ACTUATING_PERIOD (1800/9)			///< actuating period in milisecods
+#define BUTTOING_PERIOD (400/4)			///< buttons check period in miliseconds
 #define TIMING_PERIOD (3000/3)			///< timing period in miliseconds
 
-#define MIN_PER_PERIOD 11			///< minutes to be counted per period
+#define MIN_PER_PERIOD 1			///< minutes to be counted per period
 #define INITIAL_STATE 1				///< state machine initial state
 
-#define KP 0.6				///< controller proportional coeficient
-#define KI 0.2				///< controller intergral coeficient
+#define KP 0.16				///< controller proportional coeficient
+#define KI 0.06				///< controller intergral coeficient
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 

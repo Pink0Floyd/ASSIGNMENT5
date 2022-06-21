@@ -15,10 +15,11 @@
 
 #include "base.h"
 
-#define MIN_SAMPLE_VALUE 415			///< minimum sample value
+//#define MIN_SAMPLE_VALUE 415			///< minimum sample value
+#define MIN_SAMPLE_VALUE 368			///< minimum sample value
 #define MAX_SAMPLE_VALUE 1023			///< maximum sample value
 
-#define FILTER_BUFFER_SIZE (12+1)		///< number of samples in each average plus the excluded old sample
+#define FILTER_BUFFER_SIZE (6+1)		///< number of samples in each average plus the excluded old sample
 #define MIN_FILTER_VALUE 0			///< minimum filter value
 #define MAX_FILTER_VALUE 100			///< maximum filter value
 
