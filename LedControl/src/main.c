@@ -11,10 +11,15 @@
 #include "schedule.h"
 
 #define PRINT_INIT 0			///< enable for thread initialisation prints
-#define PRINT_LOOP 2			///< enable for thread loop prints
+#define PRINT_LOOP 0			///< enable for thread loop prints
 unsigned int lock_key;
 
 #define PWM_PERIOD 100			///<< period for the PWM signal in microseconds
+
+//#define SAMPLING_PERIOD (1000*2)			///< sampling period in miliseconds
+//#define ACTUATING_PERIOD (1800*2)			///< actuating period in milisecods
+//#define BUTTOING_PERIOD (400*3)			///< buttons check period in miliseconds
+//#define TIMING_PERIOD (3000*2)			///< timing period in miliseconds
 
 #define SAMPLING_PERIOD (1000/5)			///< sampling period in miliseconds
 #define ACTUATING_PERIOD (1800/9)			///< actuating period in milisecods
